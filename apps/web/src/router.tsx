@@ -7,34 +7,36 @@ import {
 } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import type { UiLocale } from '@kathapp/shared';
-import { useEffect } from 'react';
+import { useEffect, type ReactNode } from 'react';
+import { PublicShell } from './layouts/PublicShell';
+import { AdminShell } from './layouts/AdminShell';
+import { HomePage } from './pages/HomePage';
+import { SearchPage } from './pages/SearchPage';
+import {
+  MiracleDetailPage,
+  SaintDetailPage,
+  SourceDetailPage,
+} from './pages/EntityDetailPage';
+import { SuggestPage } from './pages/SuggestPage';
+import { SuggestionStatusPage } from './pages/SuggestionStatusPage';
+import {
+  AdminDashboardPage,
+  AdminMiracleEditPage,
+  AdminMiraclesListPage,
+  AdminReviewPage,
+  AdminSaintEditPage,
+  AdminSaintsListPage,
+  AdminSourceEditPage,
+  AdminSourcesListPage,
+} from './pages/AdminPages';
 
-function Shell() {
-  const { t, i18n } = useTranslation();
-  return (
-    <div className="min-h-screen bg-bg text-text">
-      <header className="border-b border-border bg-surface px-4 py-3">
-        <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <strong className="text-accent">{t('appName')}</strong>
-          <nav className="flex gap-3 text-sm text-muted">
-            <a className="hover:text-text focus:outline focus:outline-2 focus:outline-focus" href={`/${i18n.language}`}>
-              {t('nav.home')}
-            </a>
-            <a className="hover:text-text focus:outline focus:outline-2 focus:outline-focus" href={`/${i18n.language}/admin`}>
-              {t('nav.admin')}
-            </a>
-          </nav>
-        </div>
-      </header>
-      <main className="mx-auto max-w-5xl px-4 py-8">
-        <Outlet />
-      </main>
-    </div>
-  );
-}
-
-function LocaleLayout() {
-  const { locale } = localeRoute.useParams();
+function LocaleSync({
+  locale,
+  children,
+}: {
+  locale: string;
+  children: ReactNode;
+}) {
   const { i18n } = useTranslation();
 
   useEffect(() => {
@@ -43,32 +45,34 @@ function LocaleLayout() {
     }
   }, [locale, i18n]);
 
-  return <Outlet />;
+  return <>{children}</>;
 }
 
-function HomePage() {
-  const { t } = useTranslation();
+function PublicLocaleLayout() {
+  const { locale } = publicLocaleRoute.useParams();
   return (
-    <section className="space-y-3 rounded-lg border border-border bg-surface p-6">
-      <h1 className="text-2xl font-semibold">{t('home.title')}</h1>
-      <p className="text-muted">{t('home.blurb')}</p>
-      <p className="text-sm text-muted">{t('home.localeNote')}</p>
-    </section>
+    <LocaleSync locale={locale}>
+      <PublicShell />
+    </LocaleSync>
   );
 }
 
-function AdminPage() {
-  const { t } = useTranslation();
+function AdminLocaleLayout() {
+  const { locale } = adminLocaleRoute.useParams();
   return (
-    <section className="space-y-3 rounded-lg border border-border bg-surface p-6">
-      <h1 className="text-2xl font-semibold">{t('admin.title')}</h1>
-      <p className="text-muted">{t('admin.blurb')}</p>
-    </section>
+    <LocaleSync locale={locale}>
+      <AdminShell />
+    </LocaleSync>
   );
+}
+
+function assertUiLocale(locale: string): UiLocale {
+  if (locale === 'de' || locale === 'en') return locale;
+  throw redirect({ to: '/$locale', params: { locale: 'de' } });
 }
 
 const rootRoute = createRootRoute({
-  component: Shell,
+  component: () => <Outlet />,
 });
 
 const indexRoute = createRoute({
@@ -79,33 +83,172 @@ const indexRoute = createRoute({
   },
 });
 
-const localeRoute = createRoute({
+const publicLocaleRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/$locale',
-  component: LocaleLayout,
+  component: PublicLocaleLayout,
   beforeLoad: ({ params }) => {
-    const locale = params.locale as UiLocale;
-    if (locale !== 'de' && locale !== 'en') {
-      throw redirect({ to: '/$locale', params: { locale: 'de' } });
-    }
+    assertUiLocale(params.locale);
   },
 });
 
-const localeIndexRoute = createRoute({
-  getParentRoute: () => localeRoute,
+const publicIndexRoute = createRoute({
+  getParentRoute: () => publicLocaleRoute,
   path: '/',
   component: HomePage,
 });
 
-const adminRoute = createRoute({
-  getParentRoute: () => localeRoute,
+const searchRoute = createRoute({
+  getParentRoute: () => publicLocaleRoute,
+  path: '/search',
+  component: SearchPage,
+  validateSearch: (search: Record<string, unknown>) => ({
+    q: typeof search.q === 'string' ? search.q : undefined,
+    type: typeof search.type === 'string' ? search.type : undefined,
+    contentLocale:
+      typeof search.contentLocale === 'string'
+        ? search.contentLocale
+        : undefined,
+  }),
+});
+
+const saintDetailRoute = createRoute({
+  getParentRoute: () => publicLocaleRoute,
+  path: '/saints/$id',
+  component: SaintDetailPage,
+  validateSearch: (search: Record<string, unknown>) => ({
+    contentLocale:
+      typeof search.contentLocale === 'string'
+        ? search.contentLocale
+        : undefined,
+  }),
+});
+
+const miracleDetailRoute = createRoute({
+  getParentRoute: () => publicLocaleRoute,
+  path: '/miracles/$id',
+  component: MiracleDetailPage,
+  validateSearch: (search: Record<string, unknown>) => ({
+    contentLocale:
+      typeof search.contentLocale === 'string'
+        ? search.contentLocale
+        : undefined,
+  }),
+});
+
+const sourceDetailRoute = createRoute({
+  getParentRoute: () => publicLocaleRoute,
+  path: '/sources/$id',
+  component: SourceDetailPage,
+  validateSearch: (search: Record<string, unknown>) => ({
+    contentLocale:
+      typeof search.contentLocale === 'string'
+        ? search.contentLocale
+        : undefined,
+  }),
+});
+
+const suggestRoute = createRoute({
+  getParentRoute: () => publicLocaleRoute,
+  path: '/suggest',
+  component: SuggestPage,
+});
+
+const suggestionStatusRoute = createRoute({
+  getParentRoute: () => publicLocaleRoute,
+  path: '/suggestions/$id',
+  component: SuggestionStatusPage,
+});
+
+const adminIndexRedirect = createRoute({
+  getParentRoute: () => rootRoute,
   path: '/admin',
-  component: AdminPage,
+  beforeLoad: () => {
+    throw redirect({ to: '/admin/$locale', params: { locale: 'de' } });
+  },
+});
+
+const adminLocaleRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/admin/$locale',
+  component: AdminLocaleLayout,
+  beforeLoad: ({ params }) => {
+    if (params.locale !== 'de' && params.locale !== 'en') {
+      throw redirect({ to: '/admin/$locale', params: { locale: 'de' } });
+    }
+  },
+});
+
+const adminDashboardRoute = createRoute({
+  getParentRoute: () => adminLocaleRoute,
+  path: '/',
+  component: AdminDashboardPage,
+});
+
+const adminReviewRoute = createRoute({
+  getParentRoute: () => adminLocaleRoute,
+  path: '/review',
+  component: AdminReviewPage,
+});
+
+const adminSaintsListRoute = createRoute({
+  getParentRoute: () => adminLocaleRoute,
+  path: '/saints',
+  component: AdminSaintsListPage,
+});
+
+const adminMiraclesListRoute = createRoute({
+  getParentRoute: () => adminLocaleRoute,
+  path: '/miracles',
+  component: AdminMiraclesListPage,
+});
+
+const adminSourcesListRoute = createRoute({
+  getParentRoute: () => adminLocaleRoute,
+  path: '/sources',
+  component: AdminSourcesListPage,
+});
+
+const adminSaintEditRoute = createRoute({
+  getParentRoute: () => adminLocaleRoute,
+  path: '/saints/$id/edit',
+  component: AdminSaintEditPage,
+});
+
+const adminMiracleEditRoute = createRoute({
+  getParentRoute: () => adminLocaleRoute,
+  path: '/miracles/$id/edit',
+  component: AdminMiracleEditPage,
+});
+
+const adminSourceEditRoute = createRoute({
+  getParentRoute: () => adminLocaleRoute,
+  path: '/sources/$id/edit',
+  component: AdminSourceEditPage,
 });
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
-  localeRoute.addChildren([localeIndexRoute, adminRoute]),
+  publicLocaleRoute.addChildren([
+    publicIndexRoute,
+    searchRoute,
+    saintDetailRoute,
+    miracleDetailRoute,
+    sourceDetailRoute,
+    suggestRoute,
+    suggestionStatusRoute,
+  ]),
+  adminIndexRedirect,
+  adminLocaleRoute.addChildren([
+    adminDashboardRoute,
+    adminReviewRoute,
+    adminSaintsListRoute,
+    adminMiraclesListRoute,
+    adminSourcesListRoute,
+    adminSaintEditRoute,
+    adminMiracleEditRoute,
+    adminSourceEditRoute,
+  ]),
 ]);
 
 export const router = createRouter({ routeTree });
