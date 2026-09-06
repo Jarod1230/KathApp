@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - NestJS-style API stub with Prisma schema v1, health endpoint, OpenAPI stub
 - Vite React TS web stub with locale routes (`/de`, `/en`), i18n stub, design tokens
 - Shared Contract-v1 TypeScript types (entities, roles, edge types, suggestion states)
+- Frontend Priority-3 route stubs (public search/detail/suggest; separate `/admin/:locale` tree; i18n namespaces `common`|`entity`|`admin`|`suggest`) — merged from PR #1.
 
 ### Changed
 

@@ -4,48 +4,35 @@ export function SuggestPage() {
   const { t } = useTranslation('suggest');
 
   return (
-    <section className="space-y-4 rounded-lg border border-border bg-surface p-6 shadow-elev-1">
-      <h1 className="text-2xl font-semibold">{t('title')}</h1>
-      <p className="text-muted">{t('blurb')}</p>
+    <section className="space-y-4">
+      <h1 className="text-2xl font-semibold">{t('form.title')}</h1>
+      <p className="text-muted">{t('form.stub')}</p>
       <form
-        className="space-y-4"
-        onSubmit={(e) => {
-          e.preventDefault();
-        }}
+        className="max-w-lg space-y-4 rounded-lg border border-border bg-surface p-4 shadow-elev-1 md:p-6"
+        onSubmit={(e) => e.preventDefault()}
       >
-        <label className="block space-y-1">
-          <span className="text-sm text-muted">{t('entityType')}</span>
+        <label className="block space-y-1 text-sm">
+          <span className="font-medium">{t('form.entityType')}</span>
           <select
-            className="w-full rounded-md border border-border bg-bg px-3 py-2 text-text focus:outline focus:outline-2 focus:outline-focus"
-            defaultValue=""
+            className="w-full rounded-md border border-border bg-bg px-3 py-2"
             disabled
+            defaultValue="saint"
           >
-            <option value="">{t('fieldPlaceholder')}</option>
             <option value="saint">saint</option>
             <option value="miracle">miracle</option>
             <option value="source">source</option>
+            <option value="edge">edge</option>
           </select>
         </label>
-        <label className="block space-y-1">
-          <span className="text-sm text-muted">{t('notes')}</span>
-          <textarea
-            className="min-h-[6rem] w-full rounded-md border border-border bg-bg px-3 py-2 text-text placeholder:text-muted focus:outline focus:outline-2 focus:outline-focus"
-            placeholder={t('fieldPlaceholder')}
-            disabled
-          />
-        </label>
+        <p className="text-sm text-muted">{t('form.authHint')}</p>
         <button
           type="submit"
-          className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-bg opacity-70"
           disabled
+          className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-bg opacity-60"
         >
-          {t('submit')}
+          {t('form.submit')}
         </button>
       </form>
-      <div className="rounded-md border border-dashed border-border bg-bg px-3 py-2 text-sm text-muted">
-        <span className="font-medium text-text">{t('statusLabel')}: </span>
-        {t('statusPlaceholder')}
-      </div>
     </section>
   );
 }
