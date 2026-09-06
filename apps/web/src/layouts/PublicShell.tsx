@@ -20,7 +20,7 @@ export function PublicShell() {
             <Link to="/$locale" params={{ locale }}>
               {t('nav.home')}
             </Link>
-            <Link to="/$locale/search" params={{ locale }}>
+            <Link to="/$locale/search" params={{ locale }} search={{ q: undefined, type: undefined, contentLocale: undefined }}>
               {t('nav.search')}
             </Link>
             <Link to="/$locale/suggest" params={{ locale }}>

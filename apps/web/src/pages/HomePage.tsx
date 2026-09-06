@@ -13,6 +13,7 @@ export function HomePage() {
       <Link
         to="/$locale/search"
         params={{ locale }}
+        search={{ q: undefined, type: undefined, contentLocale: undefined }}
         className="inline-block rounded-md bg-accent px-4 py-2 text-sm font-medium text-bg"
       >
         {t('home.ctaSearch')}
