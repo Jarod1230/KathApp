@@ -321,12 +321,12 @@ export interface SuggestionRejectRequest {
 
 /** Publish-gate failure codes (HTTP 400 body `{ gates, message }`). */
 export type PublishGateCode =
-  | 'MISSING_TRANSLATION_DE_EN'
-  | 'MISSING_CITATION'
-  | 'MISSING_SAINT_MIRACLE_EDGE';
+  | 'translation_required'
+  | 'citation_required'
+  | 'saint_miracle_edge_required';
 
 export const PUBLISH_GATE_CODES: readonly PublishGateCode[] = [
-  'MISSING_TRANSLATION_DE_EN',
-  'MISSING_CITATION',
-  'MISSING_SAINT_MIRACLE_EDGE',
+  'translation_required',
+  'citation_required',
+  'saint_miracle_edge_required',
 ] as const;
