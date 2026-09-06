@@ -25,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Minimal GitHub Actions CI (install, shared build, prisma generate, typecheck best-effort, build api+web)
 - Shared DTOs: `SearchResponse`, `EntityDetailResponse`, `EdgeChip`, `CitationView`
 
+### Fixed
+
+- **The documented local setup could not work.** Nothing in the repo ever loaded a `.env`: `apps/api` scripts run with `cwd=apps/api`, while the README creates the file at the repository root, so `prisma migrate deploy`, `prisma generate` and `npm run dev:api` all failed with `Environment variable not found: DATABASE_URL`. The `dev` and `prisma:*` scripts now load the root `.env` through `dotenv-cli`.
+
 ### Changed
 
 - **CI is now enforcing.** Typecheck no longer runs with `continue-on-error`; lint and test are real blocking steps; install uses `npm ci`. Each gate was verified to fail on broken input.
