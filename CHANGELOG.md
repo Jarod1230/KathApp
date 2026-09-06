@@ -25,8 +25,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Minimal GitHub Actions CI (install, shared build, prisma generate, typecheck best-effort, build api+web)
 - Shared DTOs: `SearchResponse`, `EntityDetailResponse`, `EdgeChip`, `CitationView`
 
+### Added
+
+- ADR 0004 — search result semantics and pagination (`limit` / `offset`, redefined `total`, any-locale matching)
+- `GET /v1/search` accepts `limit` (default 20, max 100) and `offset`; both are clamped and echoed back in the response
+- `SearchResponse` gains `limit` and `offset`; `SEARCH_DEFAULT_LIMIT` / `SEARCH_MAX_LIMIT` exported from `packages/shared`
+- Web search page shows a result range and a previous/next pager
+- Integration tests for `SearchService` against a real Postgres in a dedicated schema, plus a Postgres service container in CI
+- Regression guard asserting the search issues a constant number of statements regardless of result count
+
 ### Fixed
 
+- **Search `total` was the page size, not the number of matches.** It was assigned `items.length`, so a client could not distinguish "3 results exist" from "3 of many were returned".
+- **Drafts could push published entities out of search results.** Translation rows were fetched with `take: 200` and only filtered by `status = published` afterwards, so a curation backlog silently hid published entities. The publish filter now lives inside the query.
+- **Search only matched German and English translations.** The locale list was hardcoded to `['de','en']` although `ContentLocale` is an open string, making Latin source terms unfindable. Matching now covers every locale; the requested locale still governs only what is displayed.
+- **Search issued two queries per candidate.** A search now costs three statements in total, whatever the result count.
 - **The documented local setup could not work.** Nothing in the repo ever loaded a `.env`: `apps/api` scripts run with `cwd=apps/api`, while the README creates the file at the repository root, so `prisma migrate deploy`, `prisma generate` and `npm run dev:api` all failed with `Environment variable not found: DATABASE_URL`. The `dev` and `prisma:*` scripts now load the root `.env` through `dotenv-cli`.
 
 ### Changed
