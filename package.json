@@ -1,0 +1,23 @@
+{
+  "name": "kathapp",
+  "version": "0.0.1",
+  "private": true,
+  "license": "GPL-3.0-or-later",
+  "description": "Multilingual Catholic knowledge hub — monorepo scaffold",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev -w @kathapp/api",
+    "dev:web": "npm run dev -w @kathapp/web",
+    "build": "npm run build -w @kathapp/shared && npm run build -w @kathapp/api && npm run build -w @kathapp/web",
+    "lint": "npm run lint -w @kathapp/shared && npm run lint -w @kathapp/api && npm run lint -w @kathapp/web",
+    "typecheck": "npm run typecheck -w @kathapp/shared && npm run typecheck -w @kathapp/api && npm run typecheck -w @kathapp/web",
+    "test": "npm run test -w @kathapp/api && npm run test -w @kathapp/web"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "npm@10"
+}

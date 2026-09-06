@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-kathapp}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kathapp}
+      POSTGRES_DB: ${POSTGRES_DB:-kathapp}
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - kathapp_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER:-kathapp}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    profiles: ['redis']
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
+    volumes:
+      - kathapp_redis:/data
+
+volumes:
+  kathapp_pg:
+  kathapp_redis:
