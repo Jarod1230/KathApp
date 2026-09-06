@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Auth + Suggestions vertical slice (ADR 0003):** Dev JWT login (`POST /v1/auth/dev-login`, `GET /v1/auth/me`); Nest `AuthModule` (JwtModule, Passport JWT strategy, guards, roles hierarchy admin≥reviewer≥contributor); `SuggestionsModule` + `PublishGateService` gates (`MISSING_TRANSLATION_DE_EN`, `MISSING_CITATION`, `MISSING_SAINT_MIRACLE_EDGE`); shared DTOs (`AuthUser`, `AuthSession`, `SuggestionPayloadV1`, …); OpenAPI Bearer + `/v1` endpoint map; `.env.example` `AUTH_DEV_LOGIN`
 - Root `package-lock.json` so CI `actions/setup-node` `cache: npm` and reproducible installs work
 - Initial monorepo scaffold: `apps/api`, `apps/web`, `packages/shared`
 - Project docs (`docs/`), CLAUDE.md hard rules, ADRs 0001–0002 (tech stack + Contract-v1)

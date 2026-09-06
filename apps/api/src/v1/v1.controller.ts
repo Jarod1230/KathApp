@@ -16,6 +16,11 @@ export class V1Controller {
         saints: 'GET /v1/saints/:id?locale=',
         miracles: 'GET /v1/miracles/:id?locale=',
         sources: 'GET /v1/sources/:id?locale=',
+        authDevLogin: 'POST /v1/auth/dev-login',
+        authMe: 'GET /v1/auth/me',
+        suggestions: 'GET|POST /v1/suggestions',
+        suggestionAccept: 'POST /v1/suggestions/:id/accept',
+        suggestionReject: 'POST /v1/suggestions/:id/reject',
       },
       entities: [
         'saint',
@@ -26,7 +31,7 @@ export class V1Controller {
         'translation',
         'suggestion',
       ],
-      note: 'Public reads return published entities only; empty DB → empty search / 404 detail. No domain seed data.',
+      note: 'Public reads return published entities only; empty DB → empty search / 404 detail. Auth mutations require Bearer JWT. No domain seed data.',
     };
   }
 }
