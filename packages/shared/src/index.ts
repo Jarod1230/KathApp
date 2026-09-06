@@ -213,3 +213,120 @@ export const PUBLIC_ENTITY_KINDS: readonly PublicEntityKind[] = [
 ] as const;
 
 export const API_VERSION_PREFIX = '/v1' as const;
+
+
+// ---------------------------------------------------------------------------
+// Auth + Suggestions (ADR 0003 / vertical slice)
+// ---------------------------------------------------------------------------
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  role: Role;
+}
+
+export interface DevLoginRequest {
+  email: string;
+  /** Defaults to contributor when omitted. */
+  role?: Role;
+}
+
+export interface AuthSession {
+  accessToken: string;
+  user: AuthUser;
+}
+
+export type SuggestionPayloadKind = 'entity' | 'edge';
+
+/** Translation row proposed in a suggestion payload (schemaVersion 1). */
+export interface SuggestionTranslationInputV1 {
+  locale: string;
+  field: string;
+  value: string;
+}
+
+/** Citation row proposed against the target entity. */
+export interface SuggestionCitationInputV1 {
+  sourceId: string;
+  locus: string;
+  excerpt?: string | null;
+  excerptLatin?: string | null;
+}
+
+/**
+ * Edge attached to an entity suggestion.
+ * `relatedId` is the other node; `direction` defaults by EdgeType convention
+ * (saint_miracle: saint→miracle, etc.).
+ */
+export interface SuggestionEdgeInputV1 {
+  type: EdgeType;
+  relatedId: string;
+  /** If `from`, target entity is fromId; if `to`, target is toId. */
+  direction?: 'from' | 'to';
+  citationId?: string | null;
+  note?: string | null;
+}
+
+/** Entity create/update proposal (Contract-v1 scalars + related graph bits). */
+export interface SuggestionEntityPayloadV1 {
+  kind: 'entity';
+  /** Defaults: create when no entityId, else update. */
+  op?: 'create' | 'update';
+  entityType: PublicEntityKind;
+  entityId?: string | null;
+  /** Scalar fields for Saint | Miracle | Source (no invented domain content). */
+  fields?: {
+    status?: PublishStatus;
+    slug?: string | null;
+    feastNote?: string | null;
+    deathYear?: number | null;
+    deathYearApprox?: boolean | null;
+    approxDate?: string | null;
+    language?: string;
+    author?: string | null;
+    year?: number | null;
+    shelfmark?: string | null;
+    url?: string | null;
+  };
+  translations?: SuggestionTranslationInputV1[];
+  citations?: SuggestionCitationInputV1[];
+  edges?: SuggestionEdgeInputV1[];
+}
+
+/** Standalone edge insert proposal. */
+export interface SuggestionEdgePayloadV1 {
+  kind: 'edge';
+  type: EdgeType;
+  fromId: string;
+  toId: string;
+  citationId?: string | null;
+  note?: string | null;
+}
+
+export type SuggestionPayloadV1 =
+  | SuggestionEntityPayloadV1
+  | SuggestionEdgePayloadV1;
+
+export interface SuggestionCreateRequest {
+  schemaVersion: number;
+  payload: SuggestionPayloadV1;
+}
+
+/** API view of a Suggestion row (ISO timestamps). */
+export type SuggestionView = Suggestion;
+
+export interface SuggestionRejectRequest {
+  reviewNote?: string;
+}
+
+/** Publish-gate failure codes (HTTP 400 body `{ gates, message }`). */
+export type PublishGateCode =
+  | 'MISSING_TRANSLATION_DE_EN'
+  | 'MISSING_CITATION'
+  | 'MISSING_SAINT_MIRACLE_EDGE';
+
+export const PUBLISH_GATE_CODES: readonly PublishGateCode[] = [
+  'MISSING_TRANSLATION_DE_EN',
+  'MISSING_CITATION',
+  'MISSING_SAINT_MIRACLE_EDGE',
+] as const;
