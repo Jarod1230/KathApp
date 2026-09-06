@@ -1,10 +1,12 @@
 import { Link, Outlet } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../lib/auth';
 
 export function AdminShell() {
   const { t, i18n } = useTranslation('admin');
   const { t: tc } = useTranslation('common');
   const locale = i18n.language === 'en' ? 'en' : 'de';
+  const { user, ready } = useAuth();
 
   return (
     <div className="min-h-screen bg-bg text-text">
@@ -31,6 +33,17 @@ export function AdminShell() {
               {tc('nav.backPublic')}
             </Link>
           </nav>
+          <div className="ml-auto text-xs text-muted">
+            {ready && user ? (
+              <span>
+                {user.email} · {user.role}
+              </span>
+            ) : ready ? (
+              <Link to="/admin/$locale" params={{ locale }} className="text-accent">
+                {tc('auth.login')}
+              </Link>
+            ) : null}
+          </div>
         </div>
       </header>
       <main className="mx-auto max-w-5xl px-4 py-6 md:px-6">
