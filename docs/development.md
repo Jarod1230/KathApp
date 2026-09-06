@@ -72,7 +72,8 @@ Empty database: search returns `{ items: [] }`; detail routes return **404** for
 
 ## API (public read + auth/suggestions)
 
-- `GET /health` — liveness
+- `GET /health` — liveness only. Deliberately does **not** check Postgres: an outage should not make an orchestrator restart an API that would recover on its own
+- `GET /health/ready` — readiness. Probes the database and answers 503 when it is unreachable. This is the one a load balancer should watch
 - `GET /v1` — contract root
 - `GET /v1/search?q=&locale=&type=&limit=&offset=` — published entities matching a translation in **any** content locale; empty `q` → empty list. `total` counts every match, `limit` (default 20, max 100) and `offset` are clamped and echoed back (ADR 0004)
 - `GET /v1/saints/:id?locale=` — published saint + translations, citations, edge chips
