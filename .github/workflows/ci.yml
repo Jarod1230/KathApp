@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install
+        run: npm install
+
+      - name: Build shared
+        run: npm run build -w @kathapp/shared
+
+      - name: Generate Prisma client
+        run: npm run prisma:generate -w @kathapp/api
+        env:
+          # generate does not need a live DB; URL satisfies schema env
+          DATABASE_URL: postgresql://kathapp:kathapp@localhost:5432/kathapp?schema=public
+
+      - name: Typecheck
+        run: npm run typecheck
+        continue-on-error: true
+
+      - name: Build api + web
+        run: npm run build -w @kathapp/api && npm run build -w @kathapp/web

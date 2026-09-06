@@ -14,7 +14,9 @@
     "build": "npm run build -w @kathapp/shared && npm run build -w @kathapp/api && npm run build -w @kathapp/web",
     "lint": "npm run lint -w @kathapp/shared && npm run lint -w @kathapp/api && npm run lint -w @kathapp/web",
     "typecheck": "npm run typecheck -w @kathapp/shared && npm run typecheck -w @kathapp/api && npm run typecheck -w @kathapp/web",
-    "test": "npm run test -w @kathapp/api && npm run test -w @kathapp/web"
+    "test": "npm run test -w @kathapp/api && npm run test -w @kathapp/web",
+    "prisma:generate": "npm run prisma:generate -w @kathapp/api",
+    "prisma:migrate:deploy": "npm run prisma:migrate:deploy -w @kathapp/api"
   },
   "engines": {
     "node": ">=20"

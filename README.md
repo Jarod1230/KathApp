@@ -25,6 +25,7 @@ KathApp/
 │   ├── roadmap.md
 │   ├── glossary.md
 │   └── decisions/           # ADRs (0001 tech stack, 0002 Contract-v1)
+├── .github/workflows/ci.yml
 ├── CLAUDE.md                # Hard rules for agents
 ├── AGENTS.md                # Bot role notes
 ├── CHANGELOG.md
@@ -44,37 +45,43 @@ docker compose up -d
 # docker compose --profile redis up -d
 ```
 
-### 2. Install
+### 2. Install + shared
 
 ```bash
 npm install
-# or: pnpm install
+npm run build -w @kathapp/shared
 ```
 
-### 3. API
-
-```bash
-npm run dev:api
-# health: http://localhost:3000/health
-# openapi stub: http://localhost:3000/docs
-# contract root: http://localhost:3000/v1
-```
-
-Prisma (when ready):
+### 3. Database (committed migration)
 
 ```bash
 npm run prisma:generate -w @kathapp/api
-npm run prisma:migrate -w @kathapp/api
+npm run prisma:migrate:deploy -w @kathapp/api
 ```
 
-### 4. Web
+### 4. API
+
+```bash
+npm run dev:api
+# health:  http://localhost:3000/health
+# search:  http://localhost:3000/v1/search?q=&locale=de
+# saint:   http://localhost:3000/v1/saints/:id?locale=de
+# openapi: http://localhost:3000/docs
+```
+
+Empty DB → empty search results; unknown/draft ids → 404. No invented domain seed.
+
+### 5. Web
 
 ```bash
 npm run dev:web
-# http://localhost:5173/de  |  http://localhost:5173/en
+# http://localhost:5173/de/search
+# uses VITE_API_URL from .env (see .env.example)
 ```
 
 UI locale lives in the URL; content locale is separate (`docs/conventions.md`).
+
+Full copy-paste steps: [`docs/development.md`](docs/development.md).
 
 ## Docs
 
