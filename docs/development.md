@@ -70,7 +70,7 @@ Empty database: search returns `{ items: [] }`; detail routes return **404** for
 
 - `GET /health` — liveness
 - `GET /v1` — contract root
-- `GET /v1/search?q=&locale=&type=` — published entities via Translation `contains` (DE/EN); empty `q` → empty list
+- `GET /v1/search?q=&locale=&type=&limit=&offset=` — published entities matching a translation in **any** content locale; empty `q` → empty list. `total` counts every match, `limit` (default 20, max 100) and `offset` are clamped and echoed back (ADR 0004)
 - `GET /v1/saints/:id?locale=` — published saint + translations, citations, edge chips
 - `GET /v1/miracles/:id?locale=` — same for miracles
 - `GET /v1/sources/:id?locale=` — same for sources
@@ -97,6 +97,20 @@ Run the same sequence locally before pushing:
 ```bash
 npm run lint && npm run typecheck && npm test && npm run build
 ```
+
+### Integration tests
+
+Tests that touch the database need a running Postgres and `TEST_DATABASE_URL`
+in the root `.env`. They use a **separate schema** (`?schema=test`), so they
+truncate their own tables and never touch your working data.
+
+```bash
+docker compose up -d
+npm test
+```
+
+Without `TEST_DATABASE_URL` the integration suite is skipped locally. Under CI
+it is a hard error, so the suite cannot quietly disappear into a false green.
 
 Linting is owned by the root `eslint.config.mjs`; workspaces do not carry their own
 lint scripts. `@typescript-eslint/consistent-type-imports` is disabled for
