@@ -19,14 +19,18 @@ export type EntityType =
   | 'translation'
   | 'suggestion';
 
-/** Extensible edge relationship kinds (Contract-v1 starter set). */
+/** Publish lifecycle for Saint, Miracle, Source (Contract-v1). */
+export type PublishStatus = 'draft' | 'published';
+
+/**
+ * Typed graph edges (Contract-v1).
+ * Convention: fromId is the left entity in the type name, toId the right
+ * (e.g. saint_miracle → fromId=Saint, toId=Miracle).
+ */
 export type EdgeType =
-  | 'related_to'
-  | 'attributed_to'
-  | 'documented_by'
-  | 'cites'
-  | 'part_of'
-  | (string & {});
+  | 'saint_miracle'
+  | 'miracle_source'
+  | 'saint_source';
 
 export type SuggestionStatus =
   | 'submitted'
@@ -40,33 +44,45 @@ export interface Timestamps {
   deletedAt?: string | null;
 }
 
+/** Canonical name / shortBio via Translation (fields: name, shortBio). */
 export interface Saint extends Timestamps {
   id: string;
-  slug: string;
-  /** Canonical non-localized key/label placeholder — localized via Translation */
-  canonicalName: string;
+  status: PublishStatus;
+  /** Optional URL-friendly key; not a display name. */
+  slug?: string | null;
+  feastNote?: string | null;
+  deathYear?: number | null;
+  deathYearApprox?: boolean | null;
 }
 
+/** Title / summary via Translation (fields: title, summary). */
 export interface Miracle extends Timestamps {
   id: string;
-  slug: string;
-  canonicalTitle: string;
+  status: PublishStatus;
+  approxDate?: string | null;
 }
 
+/** Title / notes via Translation (fields: title, notes). */
 export interface Source extends Timestamps {
   id: string;
-  slug: string;
-  title: string;
-  kind?: string | null;
+  status: PublishStatus;
+  language: string;
+  author?: string | null;
+  year?: number | null;
+  shelfmark?: string | null;
   url?: string | null;
-  bibliographicRef?: string | null;
 }
 
 export interface Citation extends Timestamps {
   id: string;
   sourceId: string;
-  locator?: string | null;
-  note?: string | null;
+  /** Page, folio, section, or other locus within the Source. */
+  locus: string;
+  /** Locale-facing excerpt (not Latin). */
+  excerpt?: string | null;
+  /** Latin excerpt, separate from locale excerpt. */
+  excerptLatin?: string | null;
+  /** Optional polymorphic link to a cited entity. */
   entityType?: EntityType | null;
   entityId?: string | null;
 }
@@ -74,11 +90,10 @@ export interface Citation extends Timestamps {
 export interface Edge extends Timestamps {
   id: string;
   type: EdgeType;
-  fromEntityType: EntityType;
-  fromEntityId: string;
-  toEntityType: EntityType;
-  toEntityId: string;
-  metadata?: Record<string, unknown> | null;
+  fromId: string;
+  toId: string;
+  citationId?: string | null;
+  note?: string | null;
 }
 
 export interface Translation extends Timestamps {
@@ -101,6 +116,17 @@ export interface Suggestion extends Timestamps {
   reviewedByUserId?: string | null;
   reviewNote?: string | null;
 }
+
+export const PUBLISH_STATUSES: readonly PublishStatus[] = [
+  'draft',
+  'published',
+] as const;
+
+export const EDGE_TYPES: readonly EdgeType[] = [
+  'saint_miracle',
+  'miracle_source',
+  'saint_source',
+] as const;
 
 export const SUGGESTION_STATUSES: readonly SuggestionStatus[] = [
   'submitted',

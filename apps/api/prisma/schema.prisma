@@ -18,6 +18,11 @@ enum Role {
   admin
 }
 
+enum PublishStatus {
+  draft
+  published
+}
+
 enum SuggestionStatus {
   submitted
   in_review
@@ -35,91 +40,98 @@ enum EntityType {
   suggestion
 }
 
-/// Extensible in application layer; starter values mirrored in shared types.
+/// Contract-v1 edge kinds. fromId/toId follow type-name order
+/// (saint_miracle → fromId=Saint, toId=Miracle).
 enum EdgeType {
-  related_to
-  attributed_to
-  documented_by
-  cites
-  part_of
+  saint_miracle
+  miracle_source
+  saint_source
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  displayName  String?
-  role         Role     @default(viewer)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  deletedAt    DateTime?
+  id          String    @id @default(cuid())
+  email       String    @unique
+  displayName String?
+  role        Role      @default(viewer)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
 
   suggestionsSubmitted Suggestion[] @relation("SuggestionSubmitter")
   suggestionsReviewed  Suggestion[] @relation("SuggestionReviewer")
 }
 
 model Saint {
-  id            String    @id @default(cuid())
-  slug          String    @unique
-  canonicalName String
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
+  id              String        @id @default(cuid())
+  status          PublishStatus @default(draft)
+  slug            String?       @unique
+  feastNote       String?
+  deathYear       Int?
+  deathYearApprox Boolean?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  deletedAt       DateTime?
 }
 
 model Miracle {
-  id             String    @id @default(cuid())
-  slug           String    @unique
-  canonicalTitle String
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  deletedAt      DateTime?
+  id         String        @id @default(cuid())
+  status     PublishStatus @default(draft)
+  approxDate String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  deletedAt  DateTime?
 }
 
 model Source {
-  id               String    @id @default(cuid())
-  slug             String    @unique
-  title            String
-  kind             String?
-  url              String?
-  bibliographicRef String?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  deletedAt        DateTime?
+  id        String        @id @default(cuid())
+  status    PublishStatus @default(draft)
+  language  String
+  author    String?
+  year      Int?
+  shelfmark String?
+  url       String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  deletedAt DateTime?
 
   citations Citation[]
 }
 
 model Citation {
-  id         String      @id @default(cuid())
-  sourceId   String
-  source     Source      @relation(fields: [sourceId], references: [id])
-  locator    String?
-  note       String?
-  entityType EntityType?
-  entityId   String?
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  deletedAt  DateTime?
+  id           String      @id @default(cuid())
+  sourceId     String
+  source       Source      @relation(fields: [sourceId], references: [id])
+  locus        String
+  excerpt      String?
+  excerptLatin String?
+  entityType   EntityType?
+  entityId     String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  deletedAt    DateTime?
+
+  edges Edge[]
 
   @@index([sourceId])
   @@index([entityType, entityId])
 }
 
 model Edge {
-  id             String     @id @default(cuid())
-  type           EdgeType
-  fromEntityType EntityType
-  fromEntityId   String
-  toEntityType   EntityType
-  toEntityId     String
-  metadata       Json?
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
-  deletedAt      DateTime?
+  id         String    @id @default(cuid())
+  type       EdgeType
+  fromId     String
+  toId       String
+  citationId String?
+  citation   Citation? @relation(fields: [citationId], references: [id])
+  note       String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
 
-  @@index([fromEntityType, fromEntityId])
-  @@index([toEntityType, toEntityId])
+  @@index([fromId])
+  @@index([toId])
   @@index([type])
+  @@index([citationId])
 }
 
 model Translation {
