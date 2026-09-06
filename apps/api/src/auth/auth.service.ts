@@ -13,6 +13,7 @@ import type {
 import { ROLES } from '@kathapp/shared';
 import { Role as PrismaRole } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { isDevLoginEnabled } from './auth.config';
 
 @Injectable()
 export class AuthService {
@@ -21,12 +22,9 @@ export class AuthService {
     private readonly jwt: JwtService,
   ) {}
 
-  /** Dev-login enabled when AUTH_DEV_LOGIN=true, or non-production unless explicitly false. */
+  /** Dev-login is off unless AUTH_DEV_LOGIN is exactly "true" (see auth.config). */
   isDevLoginEnabled(): boolean {
-    const flag = process.env.AUTH_DEV_LOGIN;
-    if (flag === 'true') return true;
-    if (flag === 'false') return false;
-    return process.env.NODE_ENV !== 'production';
+    return isDevLoginEnabled(process.env);
   }
 
   assertDevLoginEnabled(): void {

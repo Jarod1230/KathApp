@@ -20,7 +20,8 @@ Key vars:
 | `PORT` | API listen port (default `3000`) |
 | `JWT_SECRET` | Bearer JWT signing secret |
 | `JWT_EXPIRES_IN` | Access token TTL (default `7d`) |
-| `AUTH_DEV_LOGIN` | `true` enables `POST /v1/auth/dev-login` (default on when `NODE_ENV!==production` unless explicitly `false`) |
+| `NODE_ENV` | `development` locally. Only ever relaxes a check, never enables one |
+| `AUTH_DEV_LOGIN` | `POST /v1/auth/dev-login` is enabled **only** when this is exactly `true`. Off by default |
 | `VITE_API_URL` | Web → API base URL (default `http://localhost:3000`) |
 
 ## Copy-paste run (Slice A+B)
@@ -59,7 +60,11 @@ Empty database: search returns `{ items: [] }`; detail routes return **404** for
 | `npm run dev:api` | Nest API watch mode |
 | `npm run dev:web` | Vite web app |
 | `npm run build` | Build shared → api → web |
-| `npm run typecheck` | Typecheck all workspaces |
+| `npm run typecheck` | Typecheck all workspaces (includes `test/`) |
+| `npm run lint` | ESLint across the whole monorepo (root flat config) |
+| `npm run lint:fix` | ESLint with `--fix` |
+| `npm test` | Vitest unit tests (api + web) |
+| `npm run test:watch -w @kathapp/api` | Vitest watch mode for one workspace |
 | `npm run prisma:generate -w @kathapp/api` | Generate Prisma client |
 | `npm run prisma:migrate:deploy -w @kathapp/api` | Apply committed migrations |
 | `npm run prisma:migrate -w @kathapp/api` | Dev migrate (may prompt) |
@@ -69,7 +74,7 @@ Empty database: search returns `{ items: [] }`; detail routes return **404** for
 
 - `GET /health` — liveness
 - `GET /v1` — contract root
-- `GET /v1/search?q=&locale=&type=` — published entities via Translation `contains` (DE/EN); empty `q` → empty list
+- `GET /v1/search?q=&locale=&type=&limit=&offset=` — published entities matching a translation in **any** content locale; empty `q` → empty list. `total` counts every match, `limit` (default 20, max 100) and `offset` are clamped and echoed back (ADR 0004)
 - `GET /v1/saints/:id?locale=` — published saint + translations, citations, edge chips
 - `GET /v1/miracles/:id?locale=` — same for miracles
 - `GET /v1/sources/:id?locale=` — same for sources
@@ -87,7 +92,16 @@ Filters on public reads: `status=published`, `deletedAt IS NULL`. CORS allows `h
 
 ## Auth + Suggestions (dev)
 
-Dev login is enabled when `AUTH_DEV_LOGIN=true`, or when `NODE_ENV!==production` and the flag is not explicitly `false`. Disabled in production by default (endpoint → 404).
+Dev login is enabled **only** when `AUTH_DEV_LOGIN` is exactly `true`. Nothing
+else switches it on, and `NODE_ENV` is not consulted. When disabled the endpoint
+returns 404.
+
+The endpoint mints a token for any email address, including `role: "admin"`.
+Never enable it on anything other people can reach.
+
+`JWT_SECRET` must be set or the API refuses to start. There is no built-in
+fallback. The placeholder in `.env.example` is rejected unless
+`NODE_ENV=development`.
 
 ```bash
 # Dev login → JWT
@@ -141,6 +155,47 @@ Public `GET` search/detail stay open (no Bearer required).
 
 Prisma schema: `apps/api/prisma/schema.prisma`  
 Committed migration: `apps/api/prisma/migrations/20260906120000_init/`
+
+## Quality Gates
+
+CI runs lint, typecheck, test and build, and **every one of them blocks the merge**.
+Run the same sequence locally before pushing:
+
+```bash
+npm run lint && npm run typecheck && npm test && npm run build
+```
+
+### Integration tests
+
+Tests that touch the database need a running Postgres and `TEST_DATABASE_URL`
+in the root `.env`. They use a **separate schema** (`?schema=test`), so they
+truncate their own tables and never touch your working data.
+
+```bash
+docker compose up -d
+npm test
+```
+
+Without `TEST_DATABASE_URL` the integration suite is skipped locally. Under CI
+it is a hard error, so the suite cannot quietly disappear into a false green.
+
+Linting is owned by the root `eslint.config.mjs`; workspaces do not carry their own
+lint scripts. `@typescript-eslint/consistent-type-imports` is disabled for
+`apps/api` on purpose: NestJS resolves constructor dependencies from the
+`design:paramtypes` metadata TypeScript emits, and an `import type` is erased
+before that metadata is written, which breaks DI at runtime.
+
+## Environment
+
+There is exactly **one** `.env`, at the repository root. npm runs workspace
+scripts with the working directory set to the workspace, so neither Prisma nor
+Nest would find it on their own. The `dev` and `prisma:*` scripts in
+`apps/api` therefore load it explicitly via `dotenv-cli`. A missing file is
+tolerated, and variables already present in the environment win, so CI and
+production keep using real environment variables.
+
+`start` / `start:prod` deliberately do **not** read `.env` — deployments supply
+their own environment.
 
 ## Notes
 
