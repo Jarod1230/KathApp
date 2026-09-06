@@ -8,13 +8,13 @@
     "build": "nest build",
     "start": "node dist/main.js",
     "start:prod": "node dist/main.js",
-    "lint": "echo \"lint: api stub\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "echo \"test: api stub\"",
+    "test": "vitest run",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@kathapp/shared": "*",
@@ -30,6 +30,7 @@
     "@nestjs/cli": "^10.4.0",
     "@types/node": "^22.0.0",
     "prisma": "^5.20.0",
-    "typescript": "^5.6.0"
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.9"
   }
 }

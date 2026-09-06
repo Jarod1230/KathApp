@@ -17,7 +17,7 @@ jobs:
           cache: npm
 
       - name: Install
-        run: npm install
+        run: npm ci
 
       - name: Build shared
         run: npm run build -w @kathapp/shared
@@ -27,9 +27,14 @@ jobs:
         env:
           DATABASE_URL: postgresql://kathapp:kathapp@localhost:5432/kathapp?schema=public
 
+      - name: Lint
+        run: npm run lint
+
       - name: Typecheck
         run: npm run typecheck
-        continue-on-error: true
+
+      - name: Test
+        run: npm test
 
       - name: Build api + web
         run: npm run build -w @kathapp/api && npm run build -w @kathapp/web
