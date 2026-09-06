@@ -1,4 +1,4 @@
-import { Controller, Get, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { SEARCH_DEFAULT_LIMIT, SEARCH_MAX_LIMIT, SearchResponse } from '@kathapp/shared';
 import { SearchService } from './search.service';
@@ -34,8 +34,10 @@ export class SearchController {
     @Query('q') q?: string,
     @Query('locale') locale?: string,
     @Query('type') type?: string,
-    @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
-    @Query('offset', new ParseIntPipe({ optional: true })) offset?: number,
+    // Taken as raw strings: SearchService clamps them, and ADR 0004 says a
+    // malformed page cursor must not turn into a 400.
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
   ): Promise<SearchResponse> {
     return this.searchService.search({ q, locale, type, limit, offset });
   }
