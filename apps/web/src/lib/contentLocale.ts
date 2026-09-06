@@ -26,3 +26,17 @@ export function contentLocaleFromSearch(
   const raw = search?.contentLocale;
   return typeof raw === 'string' && raw.length > 0 ? raw : null;
 }
+
+/**
+ * Content locales are free-form in Contract-v1, so the suggestion form takes
+ * one as text rather than a fixed de/en choice. Latin and other source
+ * languages are the reason the field exists at all; a select of two options
+ * made them unsubmittable.
+ */
+export function sanitizeContentLocale(
+  raw: string,
+  fallback: ContentLocale,
+): ContentLocale {
+  const trimmed = raw.trim();
+  return trimmed.length > 0 ? trimmed : fallback;
+}

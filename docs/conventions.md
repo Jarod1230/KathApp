@@ -44,3 +44,8 @@ Payload changes require `schemaVersion` bump + ADR if Contract-facing.
 ## Roles in Code
 
 Use the shared `Role` union/enum; do not introduce parallel role strings (`guest`, `curator`, …) without ADR.
+
+The privilege order lives in `packages/shared` as `roleAtLeast`. Both the API
+guards and the web UI import it. Do not write a second rank table: the two would
+drift, and the UI would then show actions the server rejects, or hide actions it
+would allow.

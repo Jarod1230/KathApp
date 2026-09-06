@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   contentLocaleFromSearch,
   resolveContentLocale,
+  sanitizeContentLocale,
 } from '../src/lib/contentLocale';
 
 describe('resolveContentLocale', () => {
@@ -45,5 +46,33 @@ describe('contentLocaleFromSearch', () => {
 
   it('returns null when there are no search params', () => {
     expect(contentLocaleFromSearch(undefined)).toBeNull();
+  });
+});
+
+describe('sanitizeContentLocale', () => {
+  it('keeps a plain locale tag', () => {
+    expect(sanitizeContentLocale('la', 'de')).toBe('la');
+  });
+
+  it('trims surrounding whitespace', () => {
+    expect(sanitizeContentLocale('  la  ', 'de')).toBe('la');
+  });
+
+  it('falls back when the field is empty', () => {
+    expect(sanitizeContentLocale('', 'en')).toBe('en');
+  });
+
+  it('falls back when the field is only whitespace', () => {
+    expect(sanitizeContentLocale('   ', 'en')).toBe('en');
+  });
+
+  it('accepts a region subtag without mangling its case', () => {
+    // Content locales are free-form per Contract-v1; de-DE must survive intact.
+    expect(sanitizeContentLocale('de-DE', 'de')).toBe('de-DE');
+  });
+
+  it('accepts a locale the UI itself does not offer', () => {
+    // The point of the change: Latin sources must be submittable.
+    expect(sanitizeContentLocale('grc', 'de')).toBe('grc');
   });
 });
