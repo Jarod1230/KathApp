@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "license": "GPL-3.0-or-later",
-  "description": "Multilingual Catholic knowledge hub — monorepo scaffold",
+  "description": "Multilingual Catholic knowledge hub \u2014 monorepo scaffold",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -12,14 +12,22 @@
     "dev:api": "npm run dev -w @kathapp/api",
     "dev:web": "npm run dev -w @kathapp/web",
     "build": "npm run build -w @kathapp/shared && npm run build -w @kathapp/api && npm run build -w @kathapp/web",
-    "lint": "npm run lint -w @kathapp/shared && npm run lint -w @kathapp/api && npm run lint -w @kathapp/web",
+    "lint": "eslint .",
     "typecheck": "npm run typecheck -w @kathapp/shared && npm run typecheck -w @kathapp/api && npm run typecheck -w @kathapp/web",
-    "test": "npm run test -w @kathapp/api && npm run test -w @kathapp/web",
+    "test": "npm run test -w @kathapp/shared && npm run test -w @kathapp/api && npm run test -w @kathapp/web",
     "prisma:generate": "npm run prisma:generate -w @kathapp/api",
-    "prisma:migrate:deploy": "npm run prisma:migrate:deploy -w @kathapp/api"
+    "prisma:migrate:deploy": "npm run prisma:migrate:deploy -w @kathapp/api",
+    "lint:fix": "eslint . --fix"
   },
   "engines": {
     "node": ">=20"
   },
-  "packageManager": "npm@10"
+  "packageManager": "npm@10",
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^15.15.0",
+    "typescript-eslint": "^8.69.0"
+  }
 }

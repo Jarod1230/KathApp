@@ -7,6 +7,7 @@ import {
   contentLocaleFromSearch,
   resolveContentLocale,
 } from '../lib/contentLocale';
+import { pageState } from '../lib/pagination';
 import { searchEntities } from '../lib/api';
 
 function EntityHitLink({
@@ -67,22 +68,42 @@ export function SearchPage() {
   const search = useSearch({ strict: false }) as Record<string, unknown>;
   const q = typeof search.q === 'string' ? search.q : '';
   const type = typeof search.type === 'string' ? search.type : '';
+  const offset = typeof search.offset === 'number' ? search.offset : 0;
   const contentLocale = resolveContentLocale(
     contentLocaleFromSearch(search),
     locale,
   );
 
   const query = useQuery({
-    queryKey: ['search', q, contentLocale, type],
+    queryKey: ['search', q, contentLocale, type, offset],
     queryFn: () =>
       searchEntities({
         q: q || undefined,
         locale: contentLocale,
         type: type || undefined,
+        offset: offset || undefined,
       }),
   });
 
   const items = query.data?.items ?? [];
+  const paging = pageState({
+    total: query.data?.total ?? 0,
+    limit: query.data?.limit ?? 20,
+    offset: query.data?.offset ?? offset,
+  });
+
+  const goToOffset = (nextOffset: number) => {
+    void navigate({
+      to: '/$locale/search',
+      params: { locale },
+      search: {
+        q: q || undefined,
+        type: type || undefined,
+        offset: nextOffset || undefined,
+        contentLocale,
+      },
+    });
+  };
   const isEmptyQuery = q.trim().length === 0;
   const showEmpty =
     !query.isLoading && !query.isError && (isEmptyQuery || items.length === 0);
@@ -104,6 +125,7 @@ export function SearchPage() {
             search: {
               q: nextQ || undefined,
               type: nextType || undefined,
+              offset: undefined,
               contentLocale,
             },
           });
@@ -144,6 +166,16 @@ export function SearchPage() {
       <p className="text-sm text-muted">
         {t('search.contentLocale')}: {contentLocale}
       </p>
+
+      {!query.isLoading && !query.isError && (query.data?.total ?? 0) > 0 && (
+        <p className="text-sm text-muted" role="status">
+          {t('search.range', {
+            first: paging.firstShown,
+            last: paging.lastShown,
+            total: query.data?.total ?? 0,
+          })}
+        </p>
+      )}
 
       {query.isLoading && (
         <p className="text-sm text-muted">{t('search.loading')}</p>
@@ -188,6 +220,36 @@ export function SearchPage() {
             </li>
           ))}
         </ul>
+      )}
+
+      {!query.isLoading && (paging.hasPrevious || paging.hasNext) && (
+        <nav
+          aria-label={t('search.pager')}
+          className="flex items-center gap-3"
+        >
+          <button
+            type="button"
+            disabled={!paging.hasPrevious}
+            onClick={() => goToOffset(paging.previousOffset)}
+            className="rounded-md border border-border px-3 py-2 text-sm disabled:opacity-40"
+          >
+            {t('search.previous')}
+          </button>
+          <span className="text-sm text-muted">
+            {t('search.page', {
+              page: paging.page,
+              pageCount: paging.pageCount,
+            })}
+          </span>
+          <button
+            type="button"
+            disabled={!paging.hasNext}
+            onClick={() => goToOffset(paging.nextOffset)}
+            className="rounded-md border border-border px-3 py-2 text-sm disabled:opacity-40"
+          >
+            {t('search.next')}
+          </button>
+        </nav>
       )}
     </section>
   );

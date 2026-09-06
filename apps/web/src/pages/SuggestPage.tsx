@@ -10,6 +10,7 @@ import type {
 } from '@kathapp/shared';
 import { ApiError, createSuggestion } from '../lib/api';
 import { useAuth } from '../lib/auth';
+import { sanitizeContentLocale } from '../lib/contentLocale';
 import {
   AuthErrorBanner,
   GateFailureList,
@@ -18,7 +19,9 @@ import {
 } from '../lib/suggestionUi';
 
 const ENTITY_TYPES: PublicEntityKind[] = ['saint', 'miracle', 'source'];
-const CONTENT_LOCALES = ['de', 'en'] as const;
+// Suggestions, not an exhaustive list: the field accepts any tag (Contract-v1
+// treats ContentLocale as an open string, and Latin sources are the point).
+const CONTENT_LOCALE_SUGGESTIONS = ['de', 'en', 'la'] as const;
 const DEV_ROLES: Role[] = ['contributor', 'reviewer', 'admin'];
 
 function labelFieldFor(kind: PublicEntityKind): string {
@@ -43,7 +46,7 @@ export function SuggestPage() {
   const [loginError, setLoginError] = useState<string | null>(null);
 
   const [entityType, setEntityType] = useState<PublicEntityKind>('saint');
-  const [contentLocale, setContentLocale] = useState<'de' | 'en'>('de');
+  const [contentLocale, setContentLocale] = useState<string>('de');
   const [label, setLabel] = useState('');
   const [body, setBody] = useState('');
   const [publishStatus, setPublishStatus] = useState<PublishStatus>('draft');
@@ -264,19 +267,24 @@ export function SuggestPage() {
 
         <label className="block space-y-1 text-sm">
           <span className="font-medium">{t('form.contentLocale')}</span>
-          <select
+          <input
             value={contentLocale}
-            onChange={(e) =>
-              setContentLocale(e.target.value as 'de' | 'en')
+            onChange={(e) => setContentLocale(e.target.value)}
+            onBlur={(e) =>
+              setContentLocale(sanitizeContentLocale(e.target.value, 'de'))
             }
+            list="content-locale-options"
+            required
             className="w-full rounded-md border border-border bg-bg px-3 py-2"
-          >
-            {CONTENT_LOCALES.map((l) => (
-              <option key={l} value={l}>
-                {l}
-              </option>
+          />
+          <datalist id="content-locale-options">
+            {CONTENT_LOCALE_SUGGESTIONS.map((l) => (
+              <option key={l} value={l} />
             ))}
-          </select>
+          </datalist>
+          <span className="block text-xs text-muted">
+            {t('form.contentLocaleHint')}
+          </span>
         </label>
 
         <label className="block space-y-1 text-sm">

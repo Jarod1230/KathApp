@@ -135,8 +135,20 @@ export interface SearchResponse {
   locale: ContentLocale;
   type?: PublicEntityKind | null;
   items: SearchHit[];
+  /**
+   * All published entities matching the query, independent of limit/offset.
+   * See ADR 0004.
+   */
   total: number;
+  /** The limit the server actually applied, after clamping. */
+  limit: number;
+  /** The offset the server actually applied, after clamping. */
+  offset: number;
 }
+
+/** Search paging bounds (ADR 0004). */
+export const SEARCH_DEFAULT_LIMIT = 20;
+export const SEARCH_MAX_LIMIT = 100;
 
 /** Citation payload on entity detail (includes optional source chip data). */
 export interface CitationView extends Citation {
@@ -205,6 +217,26 @@ export const ROLES: readonly Role[] = [
   'reviewer',
   'admin',
 ] as const;
+
+/**
+ * Privilege order for the roles (ADR 0003): admin ≥ reviewer ≥ contributor ≥ viewer.
+ *
+ * This lives in shared because both the API guards and the web UI decide access
+ * from it. It used to be written out twice, once per app, so a future role
+ * inserted into the hierarchy could have left the two disagreeing about who may
+ * do what.
+ */
+const ROLE_RANK: Record<Role, number> = {
+  viewer: 0,
+  contributor: 1,
+  reviewer: 2,
+  admin: 3,
+};
+
+/** True when `actual` is at least as privileged as `required`. */
+export function roleAtLeast(actual: Role, required: Role): boolean {
+  return ROLE_RANK[actual] >= ROLE_RANK[required];
+}
 
 export const PUBLIC_ENTITY_KINDS: readonly PublicEntityKind[] = [
   'saint',
@@ -321,12 +353,12 @@ export interface SuggestionRejectRequest {
 
 /** Publish-gate failure codes (HTTP 400 body `{ gates, message }`). */
 export type PublishGateCode =
-  | 'MISSING_TRANSLATION_DE_EN'
-  | 'MISSING_CITATION'
-  | 'MISSING_SAINT_MIRACLE_EDGE';
+  | 'translation_required'
+  | 'citation_required'
+  | 'saint_miracle_edge_required';
 
 export const PUBLISH_GATE_CODES: readonly PublishGateCode[] = [
-  'MISSING_TRANSLATION_DE_EN',
-  'MISSING_CITATION',
-  'MISSING_SAINT_MIRACLE_EDGE',
+  'translation_required',
+  'citation_required',
+  'saint_miracle_edge_required',
 ] as const;

@@ -18,6 +18,11 @@
 
 - All public HTTP under `/v1/`.
 - Soft-delete: filter `deletedAt IS NULL` by default on reads.
+- **The publish gate follows every hop.** A public read must filter
+  `status = published` not only on the requested entity but on everything it
+  reaches through: citation sources, edge targets, and any entity added later.
+  Filtering the root entity alone leaks unpublished metadata through the
+  attached chips.
 - Always maintain `updatedAt` (and `createdAt` where applicable).
 - OpenAPI stays in sync with controllers.
 
@@ -39,3 +44,8 @@ Payload changes require `schemaVersion` bump + ADR if Contract-facing.
 ## Roles in Code
 
 Use the shared `Role` union/enum; do not introduce parallel role strings (`guest`, `curator`, …) without ADR.
+
+The privilege order lives in `packages/shared` as `roleAtLeast`. Both the API
+guards and the web UI import it. Do not write a second rank table: the two would
+drift, and the UI would then show actions the server rejects, or hide actions it
+would allow.

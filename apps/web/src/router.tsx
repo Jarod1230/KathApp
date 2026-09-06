@@ -105,6 +105,9 @@ const searchRoute = createRoute({
   validateSearch: (search: Record<string, unknown>) => ({
     q: typeof search.q === 'string' ? search.q : undefined,
     type: typeof search.type === 'string' ? search.type : undefined,
+    offset: Number.isFinite(Number(search.offset))
+      ? Math.max(0, Math.trunc(Number(search.offset))) || undefined
+      : undefined,
     contentLocale:
       typeof search.contentLocale === 'string'
         ? search.contentLocale
