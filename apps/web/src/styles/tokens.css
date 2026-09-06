@@ -3,7 +3,7 @@
 /*
  * Breakpoints (Design Spec / Tailwind defaults — documented here, not as CSS vars):
  * sm 640 · md 768 · lg 1024 · xl 1280 — mobile-first.
- * Nav collapses &lt; md; Entity-Detail: one column → from lg relations chips beside citations.
+ * Nav collapses below md; Entity-Detail: one column → from lg relations chips beside citations.
  */
 
 /* Light theme as default */
@@ -49,8 +49,8 @@
 
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
-  --text-lg: 1.125rem;
   --text-base: 1rem;
+  --text-lg: 1.125rem;
   --text-xl: 1.25rem;
   --text-2xl: 1.5rem;
   --text-3xl: 1.875rem;
