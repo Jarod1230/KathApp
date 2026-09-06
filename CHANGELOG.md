@@ -29,3 +29,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Contract-v1 align:** `packages/shared` + Prisma schema — EdgeType `saint_miracle`|`miracle_source`|`saint_source`; PublishStatus `draft`|`published` on Saint/Miracle/Source; Translation-backed names/titles; Citation `locus`/`excerpt`/`excerptLatin`; Edge `fromId`/`toId` + optional `citationId`/`note`; glossary Publish-Gates
 - `.env.example`: `VITE_API_URL` (replaces `VITE_API_BASE_URL`); API CORS for Vite origin
 - `docs/development.md` + README run section: copy-paste migrate/deploy + search/detail steps
+- CI watch hardened: lockfile + npm cache; Actions notify on new green/red run ids
