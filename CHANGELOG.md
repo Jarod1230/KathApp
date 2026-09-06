@@ -36,6 +36,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Draft sources leaked onto public detail pages.** `GET /v1/{saints|miracles|sources}/:id` filtered a citation's source by `deletedAt` but never by `status`, so the author, year, shelfmark and URL of an unpublished source were served publicly through the citation chip. Citations whose source is not published are now hidden entirely: a citation is provenance, and without a published source it has no verifiable backing.
+- **The entity detail path issued three queries per relation.** Source titles, publish checks for edge targets and related labels were fetched one at a time. A detail response now costs seven statements regardless of how many citations and edges the entity carries, guarded by a regression test.
+- **Integration test files shared one schema while running in parallel** and truncated each other's fixtures. `fileParallelism` is disabled for the API suite.
+
 - **Search `total` was the page size, not the number of matches.** It was assigned `items.length`, so a client could not distinguish "3 results exist" from "3 of many were returned".
 - **Drafts could push published entities out of search results.** Translation rows were fetched with `take: 200` and only filtered by `status = published` afterwards, so a curation backlog silently hid published entities. The publish filter now lives inside the query.
 - **Search only matched German and English translations.** The locale list was hardcoded to `['de','en']` although `ContentLocale` is an open string, making Latin source terms unfindable. Matching now covers every locale; the requested locale still governs only what is displayed.
