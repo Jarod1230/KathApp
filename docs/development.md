@@ -56,7 +56,11 @@ Empty database: search returns `{ items: [] }`; detail routes return **404** for
 | `npm run dev:api` | Nest API watch mode |
 | `npm run dev:web` | Vite web app |
 | `npm run build` | Build shared → api → web |
-| `npm run typecheck` | Typecheck all workspaces |
+| `npm run typecheck` | Typecheck all workspaces (includes `test/`) |
+| `npm run lint` | ESLint across the whole monorepo (root flat config) |
+| `npm run lint:fix` | ESLint with `--fix` |
+| `npm test` | Vitest unit tests (api + web) |
+| `npm run test:watch -w @kathapp/api` | Vitest watch mode for one workspace |
 | `npm run prisma:generate -w @kathapp/api` | Generate Prisma client |
 | `npm run prisma:migrate:deploy -w @kathapp/api` | Apply committed migrations |
 | `npm run prisma:migrate -w @kathapp/api` | Dev migrate (may prompt) |
@@ -84,6 +88,21 @@ Filters: `status=published`, `deletedAt IS NULL`. CORS allows `http://localhost:
 
 Prisma schema: `apps/api/prisma/schema.prisma`  
 Committed migration: `apps/api/prisma/migrations/20260906120000_init/`
+
+## Quality Gates
+
+CI runs lint, typecheck, test and build, and **every one of them blocks the merge**.
+Run the same sequence locally before pushing:
+
+```bash
+npm run lint && npm run typecheck && npm test && npm run build
+```
+
+Linting is owned by the root `eslint.config.mjs`; workspaces do not carry their own
+lint scripts. `@typescript-eslint/consistent-type-imports` is disabled for
+`apps/api` on purpose: NestJS resolves constructor dependencies from the
+`design:paramtypes` metadata TypeScript emits, and an `import type` is erased
+before that metadata is written, which breaks DI at runtime.
 
 ## Notes
 

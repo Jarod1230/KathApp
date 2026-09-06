@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- ESLint 9 flat config (`eslint.config.mjs`) covering all workspaces, plus root `lint` / `lint:fix` scripts
+- Vitest in `apps/api` and `apps/web` with unit tests for the content-locale fallback chain (API `pickLocaleValue`, `normalizeContentLocale`; web `resolveContentLocale`, `contentLocaleFromSearch`)
+- `apps/api/tsconfig.build.json` so `nest build` keeps tests out of `dist/`
 - Root `package-lock.json` so CI `actions/setup-node` `cache: npm` and reproducible installs work
 - Initial monorepo scaffold: `apps/api`, `apps/web`, `packages/shared`
 - Project docs (`docs/`), CLAUDE.md hard rules, ADRs 0001–0002 (tech stack + Contract-v1)
@@ -24,6 +27,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **CI is now enforcing.** Typecheck no longer runs with `continue-on-error`; lint and test are real blocking steps; install uses `npm ci`. Each gate was verified to fail on broken input.
+- `lint` / `test` echo stubs removed from all three workspaces — they reported success without running anything
+- `typecheck` now covers `test/` in `apps/api` and `apps/web`
 - README updated with structure tree and run instructions
 - AGENTS.md updated to point at CLAUDE.md and bot role notes
 - **Contract-v1 align:** `packages/shared` + Prisma schema — EdgeType `saint_miracle`|`miracle_source`|`saint_source`; PublishStatus `draft`|`published` on Saint/Miracle/Source; Translation-backed names/titles; Citation `locus`/`excerpt`/`excerptLatin`; Edge `fromId`/`toId` + optional `citationId`/`note`; glossary Publish-Gates
