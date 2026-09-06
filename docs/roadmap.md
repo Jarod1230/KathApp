@@ -4,14 +4,14 @@ Priorities are set by Stabschef / maintainer. This list is directional, not a co
 
 ## MVP Queue (now)
 
-1. Monorepo scaffold + CI baseline
-2. Contract-v1 persistence (Prisma) + `/v1/` CRUD read paths for core entities
-3. Auth: JWT + roles (`viewer` / `contributor` / `reviewer` / `admin`)
-4. Suggestions workflow (submit → review → accept/reject)
-5. Web: locale routes, public browse stubs, admin route tree stubs
-6. i18n plumbing (UI DE/EN) with content-locale separation
-7. OpenAPI published and kept in sync
-8. Minimal curation UI for reviewers/admins
+1. ~~Monorepo scaffold + CI baseline~~ **done** (npm workspaces, package-lock, Actions green)
+2. ~~Contract-v1 persistence (Prisma) + `/v1/` read paths for core entities~~ **done** (Slice A+B: search + saint/miracle/source detail)
+3. **Auth: JWT + roles** (`contributor` / `reviewer` / `admin`; viewer as needed) — **in progress**
+4. **Suggestions workflow** (submit → review → accept/reject) — **next**, with Auth
+5. ~~Web: locale routes, public browse stubs, admin route tree stubs~~ **done** (Priority-3 + Slice A+B wiring)
+6. ~~i18n plumbing (UI DE/EN) with content-locale separation~~ **done** (namespaces + URL locale)
+7. OpenAPI published and kept in sync — keep current with Auth/Suggestions PRs
+8. Minimal curation UI for reviewers/admins — follows Suggestions API
 
 ## Later
 
