@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Root `package-lock.json` so CI `actions/setup-node` `cache: npm` and reproducible installs work
 - Initial monorepo scaffold: `apps/api`, `apps/web`, `packages/shared`
 - Project docs (`docs/`), CLAUDE.md hard rules, ADRs 0001–0002 (tech stack + Contract-v1)
 - Docker Compose (Postgres 16, optional Redis), root workspaces, `.env.example`
