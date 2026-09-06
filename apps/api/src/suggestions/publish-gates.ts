@@ -42,7 +42,7 @@ export async function evaluatePublishGates(
     CONTENT_LOCALES.has(t.locale.toLowerCase()),
   );
   if (!hasDeEn) {
-    gates.push('MISSING_TRANSLATION_DE_EN');
+    gates.push('translation_required');
   }
 
   // Saint / Miracle require ≥1 Citation. Source metadata-only may omit citations.
@@ -55,7 +55,7 @@ export async function evaluatePublishGates(
       },
     });
     if (citationCount === 0) {
-      gates.push('MISSING_CITATION');
+      gates.push('citation_required');
     }
   }
 
@@ -69,7 +69,7 @@ export async function evaluatePublishGates(
       select: { id: true },
     });
     if (!edge) {
-      gates.push('MISSING_SAINT_MIRACLE_EDGE');
+      gates.push('saint_miracle_edge_required');
     }
   }
 

@@ -1,6 +1,6 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, ParseIntPipe, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
-import type { SearchResponse } from '@kathapp/shared';
+import { SEARCH_DEFAULT_LIMIT, SEARCH_MAX_LIMIT, SearchResponse } from '@kathapp/shared';
 import { SearchService } from './search.service';
 
 @ApiTags('v1-search')
@@ -16,12 +16,27 @@ export class SearchController {
     required: false,
     description: 'Optional filter: saint | miracle | source',
   })
-  @ApiOkResponse({ description: 'Published entity search (empty when no matches)' })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: `Page size, ${1}-${SEARCH_MAX_LIMIT}, default ${SEARCH_DEFAULT_LIMIT}. Out-of-range values are clamped (ADR 0004).`,
+  })
+  @ApiQuery({
+    name: 'offset',
+    required: false,
+    description: 'Number of results to skip, default 0. Negative values are clamped.',
+  })
+  @ApiOkResponse({
+    description:
+      'Published entity search. `total` counts every match, independent of the page.',
+  })
   search(
     @Query('q') q?: string,
     @Query('locale') locale?: string,
     @Query('type') type?: string,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
+    @Query('offset', new ParseIntPipe({ optional: true })) offset?: number,
   ): Promise<SearchResponse> {
-    return this.searchService.search(q, locale, type);
+    return this.searchService.search({ q, locale, type, limit, offset });
   }
 }

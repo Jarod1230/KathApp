@@ -135,8 +135,20 @@ export interface SearchResponse {
   locale: ContentLocale;
   type?: PublicEntityKind | null;
   items: SearchHit[];
+  /**
+   * All published entities matching the query, independent of limit/offset.
+   * See ADR 0004.
+   */
   total: number;
+  /** The limit the server actually applied, after clamping. */
+  limit: number;
+  /** The offset the server actually applied, after clamping. */
+  offset: number;
 }
+
+/** Search paging bounds (ADR 0004). */
+export const SEARCH_DEFAULT_LIMIT = 20;
+export const SEARCH_MAX_LIMIT = 100;
 
 /** Citation payload on entity detail (includes optional source chip data). */
 export interface CitationView extends Citation {
@@ -321,12 +333,12 @@ export interface SuggestionRejectRequest {
 
 /** Publish-gate failure codes (HTTP 400 body `{ gates, message }`). */
 export type PublishGateCode =
-  | 'MISSING_TRANSLATION_DE_EN'
-  | 'MISSING_CITATION'
-  | 'MISSING_SAINT_MIRACLE_EDGE';
+  | 'translation_required'
+  | 'citation_required'
+  | 'saint_miracle_edge_required';
 
 export const PUBLISH_GATE_CODES: readonly PublishGateCode[] = [
-  'MISSING_TRANSLATION_DE_EN',
-  'MISSING_CITATION',
-  'MISSING_SAINT_MIRACLE_EDGE',
+  'translation_required',
+  'citation_required',
+  'saint_miracle_edge_required',
 ] as const;

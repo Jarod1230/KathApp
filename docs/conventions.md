@@ -18,6 +18,11 @@
 
 - All public HTTP under `/v1/`.
 - Soft-delete: filter `deletedAt IS NULL` by default on reads.
+- **The publish gate follows every hop.** A public read must filter
+  `status = published` not only on the requested entity but on everything it
+  reaches through: citation sources, edge targets, and any entity added later.
+  Filtering the root entity alone leaks unpublished metadata through the
+  attached chips.
 - Always maintain `updatedAt` (and `createdAt` where applicable).
 - OpenAPI stays in sync with controllers.
 

@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import {
   ApiBearerAuth,
   ApiOkResponse,
@@ -16,6 +17,9 @@ export class AuthController {
   constructor(private readonly auth: AuthService) {}
 
   @Post('dev-login')
+  // Mints a token for any email, so it gets a much tighter limit than the
+  // blanket one in AppModule.
+  @Throttle({ default: { ttl: 60_000, limit: 5 } })
   @ApiOkResponse({ description: 'Dev JWT session (when AUTH_DEV_LOGIN enabled)' })
   async devLogin(@Body() body: DevLoginRequest): Promise<AuthSession> {
     return this.auth.devLogin(body ?? { email: '' });

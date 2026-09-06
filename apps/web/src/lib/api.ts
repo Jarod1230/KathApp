@@ -170,6 +170,8 @@ export type SearchParams = {
   q?: string;
   locale?: string;
   type?: string;
+  limit?: number;
+  offset?: number;
 };
 
 export function searchEntities(params: SearchParams): Promise<SearchResponse> {
@@ -177,6 +179,8 @@ export function searchEntities(params: SearchParams): Promise<SearchResponse> {
   if (params.q) qs.set('q', params.q);
   if (params.locale) qs.set('locale', params.locale);
   if (params.type) qs.set('type', params.type);
+  if (params.limit !== undefined) qs.set('limit', String(params.limit));
+  if (params.offset) qs.set('offset', String(params.offset));
   const query = qs.toString();
   return apiFetch<SearchResponse>(`/v1/search${query ? `?${query}` : ''}`);
 }
