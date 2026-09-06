@@ -43,6 +43,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **`GET /health` reported `ok` while the database was unreachable.** It never touched Postgres, so a load balancer or uptime check acting on it would have kept sending traffic to an API that could not answer a single public route. Liveness now stays dependency-free on purpose, and a new `GET /health/ready` probes the database and answers 503 when it is down.
+
 - **The role hierarchy was written out twice**, once in `apps/api` and once in `apps/web`, and in neither case in `packages/shared`. That is the authorization model, not a cosmetic DTO: a role inserted into the hierarchy on one side only would have left the UI and the guards disagreeing about who may do what. `roleAtLeast` now lives in `packages/shared` with tests; both apps import it.
 - **`packages/shared` could not be imported for its values from the web app.** It emitted CommonJS only and its `exports` map had no `import` condition, so Vite found no named exports. It went unnoticed because the web app had until now imported only types. The package is built dual (CJS for the Nest API, ESM for Vite).
 - **An expired token left the UI claiming the user was signed in.** The session was only revalidated on page load, so a token expiring mid-session produced failing requests behind a signed-in shell. `apiFetch` now clears the stored session on a 401 and notifies the auth provider. A 403 leaves the session alone, since that means the wrong role rather than a bad token.
