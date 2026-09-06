@@ -1,0 +1,158 @@
+// KathApp API — Contract-v1 Prisma schema
+// Soft delete via deletedAt; updatedAt on all domain entities.
+// No invented saints/miracles content — schema only.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  viewer
+  contributor
+  reviewer
+  admin
+}
+
+enum SuggestionStatus {
+  submitted
+  in_review
+  accepted
+  rejected
+}
+
+enum EntityType {
+  saint
+  miracle
+  source
+  citation
+  edge
+  translation
+  suggestion
+}
+
+/// Extensible in application layer; starter values mirrored in shared types.
+enum EdgeType {
+  related_to
+  attributed_to
+  documented_by
+  cites
+  part_of
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  displayName  String?
+  role         Role     @default(viewer)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+
+  suggestionsSubmitted Suggestion[] @relation("SuggestionSubmitter")
+  suggestionsReviewed  Suggestion[] @relation("SuggestionReviewer")
+}
+
+model Saint {
+  id            String    @id @default(cuid())
+  slug          String    @unique
+  canonicalName String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+}
+
+model Miracle {
+  id             String    @id @default(cuid())
+  slug           String    @unique
+  canonicalTitle String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+}
+
+model Source {
+  id               String    @id @default(cuid())
+  slug             String    @unique
+  title            String
+  kind             String?
+  url              String?
+  bibliographicRef String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  deletedAt        DateTime?
+
+  citations Citation[]
+}
+
+model Citation {
+  id         String      @id @default(cuid())
+  sourceId   String
+  source     Source      @relation(fields: [sourceId], references: [id])
+  locator    String?
+  note       String?
+  entityType EntityType?
+  entityId   String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  deletedAt  DateTime?
+
+  @@index([sourceId])
+  @@index([entityType, entityId])
+}
+
+model Edge {
+  id             String     @id @default(cuid())
+  type           EdgeType
+  fromEntityType EntityType
+  fromEntityId   String
+  toEntityType   EntityType
+  toEntityId     String
+  metadata       Json?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  deletedAt      DateTime?
+
+  @@index([fromEntityType, fromEntityId])
+  @@index([toEntityType, toEntityId])
+  @@index([type])
+}
+
+model Translation {
+  id         String     @id @default(cuid())
+  entityType EntityType
+  entityId   String
+  locale     String
+  field      String
+  value      String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  deletedAt  DateTime?
+
+  @@unique([entityType, entityId, locale, field])
+  @@index([locale])
+}
+
+model Suggestion {
+  id                String           @id @default(cuid())
+  entityType        EntityType
+  entityId          String?
+  status            SuggestionStatus @default(submitted)
+  schemaVersion     Int              @default(1)
+  payload           Json
+  submittedByUserId String
+  submittedBy       User             @relation("SuggestionSubmitter", fields: [submittedByUserId], references: [id])
+  reviewedByUserId  String?
+  reviewedBy        User?            @relation("SuggestionReviewer", fields: [reviewedByUserId], references: [id])
+  reviewNote        String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  deletedAt         DateTime?
+
+  @@index([status])
+  @@index([entityType, entityId])
+}
