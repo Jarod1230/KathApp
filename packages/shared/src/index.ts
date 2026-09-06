@@ -38,6 +38,9 @@ export type SuggestionStatus =
   | 'accepted'
   | 'rejected';
 
+/** Public browseable entity kinds for search + detail. */
+export type PublicEntityKind = 'saint' | 'miracle' | 'source';
+
 export interface Timestamps {
   createdAt: string; // ISO-8601
   updatedAt: string; // ISO-8601
@@ -117,6 +120,67 @@ export interface Suggestion extends Timestamps {
   reviewNote?: string | null;
 }
 
+/** Search hit for GET /v1/search (public, published only). */
+export interface SearchHit {
+  entityType: PublicEntityKind;
+  id: string;
+  /** Localized label (name/title) for the requested content locale. */
+  label: string;
+  /** Optional short bio / summary snippet. */
+  snippet?: string | null;
+}
+
+export interface SearchResponse {
+  q: string;
+  locale: ContentLocale;
+  type?: PublicEntityKind | null;
+  items: SearchHit[];
+  total: number;
+}
+
+/** Citation payload on entity detail (includes optional source chip data). */
+export interface CitationView extends Citation {
+  source?: Pick<
+    Source,
+    'id' | 'language' | 'author' | 'year' | 'shelfmark' | 'url' | 'status'
+  > | null;
+  sourceTitle?: string | null;
+}
+
+/** Edge as chip data for entity detail relations slot. */
+export interface EdgeChip {
+  id: string;
+  type: EdgeType;
+  relatedEntityType: PublicEntityKind;
+  relatedId: string;
+  label: string;
+  citationId?: string | null;
+  note?: string | null;
+}
+
+/** Resolved translation field for a single locale (after fallback). */
+export interface ResolvedTranslationField {
+  field: string;
+  value: string;
+  locale: ContentLocale;
+}
+
+/** GET /v1/{saints|miracles|sources}/:id response. */
+export interface EntityDetailResponse {
+  entityType: PublicEntityKind;
+  id: string;
+  locale: ContentLocale;
+  status: PublishStatus;
+  label: string;
+  body?: string | null;
+  saint?: Omit<Saint, keyof Timestamps> & Timestamps;
+  miracle?: Omit<Miracle, keyof Timestamps> & Timestamps;
+  source?: Omit<Source, keyof Timestamps> & Timestamps;
+  translations: ResolvedTranslationField[];
+  citations: CitationView[];
+  edges: EdgeChip[];
+}
+
 export const PUBLISH_STATUSES: readonly PublishStatus[] = [
   'draft',
   'published',
@@ -140,6 +204,12 @@ export const ROLES: readonly Role[] = [
   'contributor',
   'reviewer',
   'admin',
+] as const;
+
+export const PUBLIC_ENTITY_KINDS: readonly PublicEntityKind[] = [
+  'saint',
+  'miracle',
+  'source',
 ] as const;
 
 export const API_VERSION_PREFIX = '/v1' as const;

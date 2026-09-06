@@ -6,11 +6,17 @@ import { API_VERSION_PREFIX } from '@kathapp/shared';
 @Controller('v1')
 export class V1Controller {
   @Get()
-  @ApiOkResponse({ description: 'Contract-v1 API root stub' })
+  @ApiOkResponse({ description: 'Contract-v1 API root' })
   getRoot() {
     return {
       contract: 'v1',
       prefix: API_VERSION_PREFIX,
+      endpoints: {
+        search: 'GET /v1/search?q=&locale=&type=',
+        saints: 'GET /v1/saints/:id?locale=',
+        miracles: 'GET /v1/miracles/:id?locale=',
+        sources: 'GET /v1/sources/:id?locale=',
+      },
       entities: [
         'saint',
         'miracle',
@@ -20,7 +26,7 @@ export class V1Controller {
         'translation',
         'suggestion',
       ],
-      note: 'Scaffold stub — no domain seed data.',
+      note: 'Public reads return published entities only; empty DB → empty search / 404 detail. No domain seed data.',
     };
   }
 }
