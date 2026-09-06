@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import type { AuthUser, Role } from '@kathapp/shared';
 import { PrismaService } from '../prisma/prisma.service';
+import { resolveJwtSecret } from './auth.config';
 
 export interface JwtPayload {
   sub: string;
@@ -16,7 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET ?? 'dev-change-me',
+      secretOrKey: resolveJwtSecret(process.env),
     });
   }
 

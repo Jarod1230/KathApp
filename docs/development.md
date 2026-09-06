@@ -20,7 +20,8 @@ Key vars:
 | `PORT` | API listen port (default `3000`) |
 | `JWT_SECRET` | Bearer JWT signing secret |
 | `JWT_EXPIRES_IN` | Access token TTL (default `7d`) |
-| `AUTH_DEV_LOGIN` | `true` enables `POST /v1/auth/dev-login` (default on when `NODE_ENV!==production` unless explicitly `false`) |
+| `NODE_ENV` | `development` locally. Only ever relaxes a check, never enables one |
+| `AUTH_DEV_LOGIN` | `POST /v1/auth/dev-login` is enabled **only** when this is exactly `true`. Off by default |
 | `VITE_API_URL` | Web → API base URL (default `http://localhost:3000`) |
 
 ## Copy-paste run (Slice A+B)
@@ -91,7 +92,16 @@ Filters on public reads: `status=published`, `deletedAt IS NULL`. CORS allows `h
 
 ## Auth + Suggestions (dev)
 
-Dev login is enabled when `AUTH_DEV_LOGIN=true`, or when `NODE_ENV!==production` and the flag is not explicitly `false`. Disabled in production by default (endpoint → 404).
+Dev login is enabled **only** when `AUTH_DEV_LOGIN` is exactly `true`. Nothing
+else switches it on, and `NODE_ENV` is not consulted. When disabled the endpoint
+returns 404.
+
+The endpoint mints a token for any email address, including `role: "admin"`.
+Never enable it on anything other people can reach.
+
+`JWT_SECRET` must be set or the API refuses to start. There is no built-in
+fallback. The placeholder in `.env.example` is rejected unless
+`NODE_ENV=development`.
 
 ```bash
 # Dev login → JWT
