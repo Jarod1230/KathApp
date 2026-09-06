@@ -1,7 +1,7 @@
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import type { PublicEntityKind, SearchHit } from '@kathapp/shared';
+import type { SearchHit } from '@kathapp/shared';
 import {
   contentLocaleFromSearch,
   resolveContentLocale,
@@ -171,7 +171,11 @@ export function SearchPage() {
                 className="block px-3 py-3 hover:bg-muted/20"
               >
                 <span className="text-xs uppercase tracking-wide text-muted">
-                  {t(`chips.${hit.entityType}` as 'chips.saint')}
+                  {hit.entityType === 'saint'
+                    ? t('chips.saint')
+                    : hit.entityType === 'miracle'
+                      ? t('chips.miracle')
+                      : t('chips.source')}
                 </span>
                 <span className="mt-1 block font-medium">{hit.label}</span>
                 {hit.snippet ? (
@@ -187,6 +191,3 @@ export function SearchPage() {
     </section>
   );
 }
-
-// silence unused type import if tree-shaken oddly
-void 0 as unknown as PublicEntityKind;
