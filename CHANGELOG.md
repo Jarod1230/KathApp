@@ -7,8 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+
+- **The dev login was reachable in a normal deployment.** It was enabled whenever `NODE_ENV !== 'production'`, and nothing in the repository sets `NODE_ENV` — including `start:prod`, which is plain `node dist/main.js`. `POST /v1/auth/dev-login` mints a token for any email address at any role, so a deployment that simply never set the variable handed out admin access. It is now off unless `AUTH_DEV_LOGIN` is exactly `true`, and `NODE_ENV` no longer enables anything.
+- **The JWT signing key had a built-in fallback.** `JWT_SECRET` fell back to the literal `dev-change-me`, the value committed to `.env.example`, so a deployment that forgot the variable signed tokens with a key anyone could read in the repository. The API now refuses to start without a real secret, and rejects the placeholder unless `NODE_ENV=development`.
+- Added `helmet`, a global `ValidationPipe`, and per-IP rate limiting (120/min by default, 5/min on `dev-login`)
+
 ### Added
 
+- **Auth + Suggestions vertical slice (ADR 0003):** Dev JWT login (`POST /v1/auth/dev-login`, `GET /v1/auth/me`); Nest `AuthModule` (JwtModule, Passport JWT strategy, guards, roles hierarchy admin≥reviewer≥contributor); `SuggestionsModule` + `PublishGateService` gates (`translation_required`, `citation_required`, `saint_miracle_edge_required`); shared DTOs (`AuthUser`, `AuthSession`, `SuggestionPayloadV1`, …); OpenAPI Bearer + `/v1` endpoint map; `.env.example` `AUTH_DEV_LOGIN`
 - ESLint 9 flat config (`eslint.config.mjs`) covering all workspaces, plus root `lint` / `lint:fix` scripts
 - Vitest in `apps/api` and `apps/web` with unit tests for the content-locale fallback chain (API `pickLocaleValue`, `normalizeContentLocale`; web `resolveContentLocale`, `contentLocaleFromSearch`)
 - `apps/api/tsconfig.build.json` so `nest build` keeps tests out of `dist/`

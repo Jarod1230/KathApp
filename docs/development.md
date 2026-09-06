@@ -18,6 +18,10 @@ Key vars:
 | --- | --- |
 | `DATABASE_URL` | Prisma → Postgres |
 | `PORT` | API listen port (default `3000`) |
+| `JWT_SECRET` | Bearer JWT signing secret |
+| `JWT_EXPIRES_IN` | Access token TTL (default `7d`) |
+| `NODE_ENV` | `development` locally. Only ever relaxes a check, never enables one |
+| `AUTH_DEV_LOGIN` | `POST /v1/auth/dev-login` is enabled **only** when this is exactly `true`. Off by default |
 | `VITE_API_URL` | Web → API base URL (default `http://localhost:3000`) |
 
 ## Copy-paste run (Slice A+B)
@@ -66,7 +70,7 @@ Empty database: search returns `{ items: [] }`; detail routes return **404** for
 | `npm run prisma:migrate -w @kathapp/api` | Dev migrate (may prompt) |
 | `npm run prisma:studio -w @kathapp/api` | Prisma Studio |
 
-## API (public read slice)
+## API (public read + auth/suggestions)
 
 - `GET /health` — liveness
 - `GET /v1` — contract root
@@ -74,9 +78,72 @@ Empty database: search returns `{ items: [] }`; detail routes return **404** for
 - `GET /v1/saints/:id?locale=` — published saint + translations, citations, edge chips
 - `GET /v1/miracles/:id?locale=` — same for miracles
 - `GET /v1/sources/:id?locale=` — same for sources
+- `POST /v1/auth/dev-login` — upsert user + JWT (dev only; see Auth section)
+- `GET /v1/auth/me` — Bearer → current user
+- `POST /v1/suggestions` — Bearer contributor+ submit
+- `GET /v1/suggestions` — Bearer reviewer+ list (`?status=`)
+- `GET /v1/suggestions/:id` — Bearer owner or reviewer+
+- `POST /v1/suggestions/:id/accept` — Bearer reviewer+ (publish-gates)
+- `POST /v1/suggestions/:id/reject` — Bearer reviewer+
 - OpenAPI: `/docs`
 
-Filters: `status=published`, `deletedAt IS NULL`. CORS allows `http://localhost:5173`.
+Filters on public reads: `status=published`, `deletedAt IS NULL`. CORS allows `http://localhost:5173`.
+
+
+## Auth + Suggestions (dev)
+
+Dev login is enabled **only** when `AUTH_DEV_LOGIN` is exactly `true`. Nothing
+else switches it on, and `NODE_ENV` is not consulted. When disabled the endpoint
+returns 404.
+
+The endpoint mints a token for any email address, including `role: "admin"`.
+Never enable it on anything other people can reach.
+
+`JWT_SECRET` must be set or the API refuses to start. There is no built-in
+fallback. The placeholder in `.env.example` is rejected unless
+`NODE_ENV=development`.
+
+```bash
+# Dev login → JWT
+curl -s -X POST http://localhost:3000/v1/auth/dev-login \
+  -H 'content-type: application/json' \
+  -d '{"email":"reviewer@example.com","role":"reviewer"}'
+# → { "accessToken":"...", "user":{ "id","email","role" } }
+
+TOKEN='<accessToken from above>'
+
+# Current user
+curl -s http://localhost:3000/v1/auth/me -H "authorization: Bearer $TOKEN"
+
+# Submit suggestion (contributor+)
+curl -s -X POST http://localhost:3000/v1/suggestions \
+  -H "authorization: Bearer $TOKEN" \
+  -H 'content-type: application/json' \
+  -d '{
+    "schemaVersion": 1,
+    "payload": {
+      "kind": "entity",
+      "op": "create",
+      "entityType": "source",
+      "fields": { "language": "la", "status": "draft" },
+      "translations": [{ "locale": "de", "field": "title", "value": "Stub Entity (dev)" }]
+    }
+  }'
+
+# List (reviewer+)
+curl -s "http://localhost:3000/v1/suggestions?status=submitted" \
+  -H "authorization: Bearer $TOKEN"
+
+# Accept / reject (reviewer+) — accept runs publish-gates when resulting status is published
+# curl -s -X POST http://localhost:3000/v1/suggestions/<id>/accept -H "authorization: Bearer $TOKEN"
+# curl -s -X POST http://localhost:3000/v1/suggestions/<id>/reject \
+#   -H "authorization: Bearer $TOKEN" -H 'content-type: application/json' \
+#   -d '{"reviewNote":"needs citation"}'
+```
+
+Publish-gate failures on accept return **400** with `{ "gates": ["MISSING_TRANSLATION_DE_EN"|"MISSING_CITATION"|"MISSING_SAINT_MIRACLE_EDGE"], "message": "Publish gates failed" }`.
+
+Public `GET` search/detail stay open (no Bearer required).
 
 ## Web
 
