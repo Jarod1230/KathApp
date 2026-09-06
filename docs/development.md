@@ -104,6 +104,18 @@ lint scripts. `@typescript-eslint/consistent-type-imports` is disabled for
 `design:paramtypes` metadata TypeScript emits, and an `import type` is erased
 before that metadata is written, which breaks DI at runtime.
 
+## Environment
+
+There is exactly **one** `.env`, at the repository root. npm runs workspace
+scripts with the working directory set to the workspace, so neither Prisma nor
+Nest would find it on their own. The `dev` and `prisma:*` scripts in
+`apps/api` therefore load it explicitly via `dotenv-cli`. A missing file is
+tolerated, and variables already present in the environment win, so CI and
+production keep using real environment variables.
+
+`start` / `start:prod` deliberately do **not** read `.env` — deployments supply
+their own environment.
+
 ## Notes
 
 - Do not commit secrets; keep `.env` local.
