@@ -43,6 +43,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Accepted suggestions could write edges pointing at nothing.** The accept path took `fromId` and `toId` straight from the payload after only a presence check, so an edge could reference a non-existent id, a soft-deleted entity, or an entity of the wrong kind for its type (a `saint_miracle` edge ending at a Source). The read paths skip such rows silently, so the damage would have shown up as content quietly missing from pages rather than as an error. Both write paths now validate the endpoints inside the accept transaction.
+
+### Added
+
+- `EDGE_ENDPOINT_KINDS` in `packages/shared`: which entity kind sits at each end of a typed edge. It was previously only a comment, restated as an if-chain in the read path and not checked at all on write. Read path, write path and contract now share one definition.
+- ADR 0005 (proposed) — referential integrity for graph endpoints, recording the options for enforcing this in the database rather than only in the application
+
 - **The role hierarchy was written out twice**, once in `apps/api` and once in `apps/web`, and in neither case in `packages/shared`. That is the authorization model, not a cosmetic DTO: a role inserted into the hierarchy on one side only would have left the UI and the guards disagreeing about who may do what. `roleAtLeast` now lives in `packages/shared` with tests; both apps import it.
 - **`packages/shared` could not be imported for its values from the web app.** It emitted CommonJS only and its `exports` map had no `import` condition, so Vite found no named exports. It went unnoticed because the web app had until now imported only types. The package is built dual (CJS for the Nest API, ESM for Vite).
 - **An expired token left the UI claiming the user was signed in.** The session was only revalidated on page load, so a token expiring mid-session produced failing requests behind a signed-in shell. `apiFetch` now clears the stored session on a 401 and notifies the auth provider. A 403 leaves the session alone, since that means the wrong role rather than a bad token.

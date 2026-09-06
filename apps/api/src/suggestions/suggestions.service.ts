@@ -13,7 +13,8 @@ import type {
   SuggestionStatus,
   SuggestionView,
 } from '@kathapp/shared';
-import { PUBLIC_ENTITY_KINDS } from '@kathapp/shared';
+import {
+  EDGE_ENDPOINT_KINDS, PUBLIC_ENTITY_KINDS } from '@kathapp/shared';
 import {
   EntityType,
   EdgeType as PrismaEdgeType,
@@ -259,6 +260,12 @@ export class SuggestionsService {
       if (!payload.type || !payload.fromId || !payload.toId) {
         throw new BadRequestException('edge payload requires type, fromId, toId');
       }
+      await this.assertEdgeEndpoints(
+        tx,
+        payload.type as PrismaEdgeType,
+        payload.fromId,
+        payload.toId,
+      );
       await tx.edge.create({
         data: {
           type: payload.type as PrismaEdgeType,
@@ -374,6 +381,12 @@ export class SuggestionsService {
           fromId = entityId;
           toId = e.relatedId;
         }
+        await this.assertEdgeEndpoints(
+          tx,
+          e.type as PrismaEdgeType,
+          fromId,
+          toId,
+        );
         await tx.edge.create({
           data: {
             type: e.type as PrismaEdgeType,
@@ -520,5 +533,45 @@ export class SuggestionsService {
           : {}),
       },
     });
+  }
+
+  /**
+   * An Edge stores its endpoints as bare ids, so the database cannot enforce
+   * that they exist or that they are of the kind the edge type declares. The
+   * read paths quietly drop rows that violate this, which means bad data would
+   * accumulate invisibly. Check on write instead.
+   */
+  private async assertEdgeEndpoints(
+    tx: Prisma.TransactionClient,
+    type: PrismaEdgeType,
+    fromId: string,
+    toId: string,
+  ): Promise<void> {
+    const endpoints = EDGE_ENDPOINT_KINDS[type];
+    if (!endpoints) {
+      throw new BadRequestException(`unknown edge type: ${type}`);
+    }
+    await this.assertEndpointExists(tx, endpoints.from, fromId, 'fromId');
+    await this.assertEndpointExists(tx, endpoints.to, toId, 'toId');
+  }
+
+  private async assertEndpointExists(
+    tx: Prisma.TransactionClient,
+    kind: PublicEntityKind,
+    id: string,
+    field: 'fromId' | 'toId',
+  ): Promise<void> {
+    const where = { id, deletedAt: null };
+    const found =
+      kind === 'saint'
+        ? await tx.saint.count({ where })
+        : kind === 'miracle'
+          ? await tx.miracle.count({ where })
+          : await tx.source.count({ where });
+    if (found === 0) {
+      throw new BadRequestException(
+        `edge ${field} must reference an existing ${kind}`,
+      );
+    }
   }
 }
