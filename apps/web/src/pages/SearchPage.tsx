@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +19,7 @@ function EntityHitLink({
   hit: SearchHit;
   locale: string;
   contentLocale: string;
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }) {
   const params = { locale, id: hit.id };
