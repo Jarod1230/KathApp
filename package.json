@@ -14,7 +14,7 @@
     "build": "npm run build -w @kathapp/shared && npm run build -w @kathapp/api && npm run build -w @kathapp/web",
     "lint": "eslint .",
     "typecheck": "npm run typecheck -w @kathapp/shared && npm run typecheck -w @kathapp/api && npm run typecheck -w @kathapp/web",
-    "test": "npm run test -w @kathapp/api && npm run test -w @kathapp/web",
+    "test": "npm run test -w @kathapp/shared && npm run test -w @kathapp/api && npm run test -w @kathapp/web",
     "prisma:generate": "npm run prisma:generate -w @kathapp/api",
     "prisma:migrate:deploy": "npm run prisma:migrate:deploy -w @kathapp/api",
     "lint:fix": "eslint . --fix"

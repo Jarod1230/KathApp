@@ -8,12 +8,14 @@ import {
   type ReactNode,
 } from 'react';
 import type { AuthUser, Role } from '@kathapp/shared';
+import { roleAtLeast } from '@kathapp/shared';
 import {
   clearAuthStorage,
   devLogin,
   fetchMe,
   getAccessToken,
   getStoredUser,
+  onUnauthorized,
   setAccessToken,
   setStoredUser,
 } from './api';
@@ -74,6 +76,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  // A token can expire while the app is open. api.ts clears the storage on a
+  // 401 and tells us here, so the UI stops presenting a signed-in user.
+  useEffect(
+    () =>
+      onUnauthorized(() => {
+        setToken(null);
+        setUser(null);
+      }),
+    [],
+  );
+
   const login = useCallback(async (email: string, role?: Role) => {
     const session = await devLogin(email.trim(), role);
     setAccessToken(session.accessToken);
@@ -107,13 +120,6 @@ export function useAuth(): AuthContextValue {
   return ctx;
 }
 
-const ROLE_RANK: Record<Role, number> = {
-  viewer: 0,
-  contributor: 1,
-  reviewer: 2,
-  admin: 3,
-};
-
-export function roleAtLeast(actual: Role, required: Role): boolean {
-  return ROLE_RANK[actual] >= ROLE_RANK[required];
-}
+// Re-exported so existing imports from this module keep working; the single
+// definition lives in @kathapp/shared.
+export { roleAtLeast };

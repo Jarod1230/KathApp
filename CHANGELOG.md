@@ -43,6 +43,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The role hierarchy was written out twice**, once in `apps/api` and once in `apps/web`, and in neither case in `packages/shared`. That is the authorization model, not a cosmetic DTO: a role inserted into the hierarchy on one side only would have left the UI and the guards disagreeing about who may do what. `roleAtLeast` now lives in `packages/shared` with tests; both apps import it.
+- **`packages/shared` could not be imported for its values from the web app.** It emitted CommonJS only and its `exports` map had no `import` condition, so Vite found no named exports. It went unnoticed because the web app had until now imported only types. The package is built dual (CJS for the Nest API, ESM for Vite).
+- **An expired token left the UI claiming the user was signed in.** The session was only revalidated on page load, so a token expiring mid-session produced failing requests behind a signed-in shell. `apiFetch` now clears the stored session on a 401 and notifies the auth provider. A 403 leaves the session alone, since that means the wrong role rather than a bad token.
+- **The suggestion form offered German and English only**, although Contract-v1 treats the content locale as an open string and the server accepts any tag. Latin source terms were unsubmittable. The field is now free text with suggestions.
+
+### Added
+
+- Vitest in `packages/shared`; the root `npm test` now covers all three workspaces
+- Web tests run under jsdom, so browser storage behaviour is testable
+- Regression tests for translation key parity between German and English
+
 - **Draft sources leaked onto public detail pages.** `GET /v1/{saints|miracles|sources}/:id` filtered a citation's source by `deletedAt` but never by `status`, so the author, year, shelfmark and URL of an unpublished source were served publicly through the citation chip. Citations whose source is not published are now hidden entirely: a citation is provenance, and without a published source it has no verifiable backing.
 - **The entity detail path issued three queries per relation.** Source titles, publish checks for edge targets and related labels were fetched one at a time. A detail response now costs seven statements regardless of how many citations and edges the entity carries, guarded by a regression test.
 - **Integration test files shared one schema while running in parallel** and truncated each other's fixtures. `fileParallelism` is disabled for the API suite.

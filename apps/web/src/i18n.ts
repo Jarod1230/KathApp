@@ -99,6 +99,8 @@ const de = {
         source: 'Quelle',
       },
       contentLocale: 'Content-Locale',
+      contentLocaleHint:
+        'Beliebiges Sprachkürzel, z. B. de, en, la. Nicht auf DE/EN beschränkt.',
       label: 'Name / Titel',
       body: 'Kurzbio / Zusammenfassung / Notizen',
       publishStatus: 'Publish-Status',
@@ -317,6 +319,8 @@ const en = {
         source: 'Source',
       },
       contentLocale: 'Content locale',
+      contentLocaleHint:
+        'Any language tag, e.g. de, en, la. Not limited to DE/EN.',
       label: 'Name / title',
       body: 'Short bio / summary / notes',
       publishStatus: 'Publish status',

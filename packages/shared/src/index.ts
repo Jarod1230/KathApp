@@ -218,6 +218,26 @@ export const ROLES: readonly Role[] = [
   'admin',
 ] as const;
 
+/**
+ * Privilege order for the roles (ADR 0003): admin ≥ reviewer ≥ contributor ≥ viewer.
+ *
+ * This lives in shared because both the API guards and the web UI decide access
+ * from it. It used to be written out twice, once per app, so a future role
+ * inserted into the hierarchy could have left the two disagreeing about who may
+ * do what.
+ */
+const ROLE_RANK: Record<Role, number> = {
+  viewer: 0,
+  contributor: 1,
+  reviewer: 2,
+  admin: 3,
+};
+
+/** True when `actual` is at least as privileged as `required`. */
+export function roleAtLeast(actual: Role, required: Role): boolean {
+  return ROLE_RANK[actual] >= ROLE_RANK[required];
+}
+
 export const PUBLIC_ENTITY_KINDS: readonly PublicEntityKind[] = [
   'saint',
   'miracle',

@@ -83,6 +83,24 @@ export function clearAuthStorage(): void {
   setStoredUser(null);
 }
 
+type UnauthorizedListener = () => void;
+const unauthorizedListeners = new Set<UnauthorizedListener>();
+
+/**
+ * Fires when the API rejects the stored token. Tokens live for days, so one can
+ * expire mid-session; without this the UI keeps showing a signed-in user while
+ * every request fails. Returns an unsubscribe function.
+ */
+export function onUnauthorized(listener: UnauthorizedListener): () => void {
+  unauthorizedListeners.add(listener);
+  return () => unauthorizedListeners.delete(listener);
+}
+
+function handleUnauthorized(): void {
+  clearAuthStorage();
+  for (const listener of unauthorizedListeners) listener();
+}
+
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -146,6 +164,11 @@ export async function apiFetch<T>(
   });
 
   if (!res.ok) {
+    // 401 means the token is gone or expired. 403 means the token is fine but
+    // the role is not enough, so the session stays.
+    if (res.status === 401) {
+      handleUnauthorized();
+    }
     let body: unknown;
     const text = await res.text();
     if (text) {
