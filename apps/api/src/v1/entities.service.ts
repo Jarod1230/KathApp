@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
+  EDGE_ENDPOINT_KINDS,
   type CitationView,
   type EdgeChip,
   type EdgeType,
@@ -56,29 +57,14 @@ function relatedKindForEdge(
   toId: string,
   selfId: string,
 ): RelatedRef | null {
-  if (edgeType === PrismaEdgeType.saint_miracle) {
-    if (selfKind === 'saint' && fromId === selfId) {
-      return { relatedEntityType: 'miracle', relatedId: toId };
-    }
-    if (selfKind === 'miracle' && toId === selfId) {
-      return { relatedEntityType: 'saint', relatedId: fromId };
-    }
+  const endpoints = EDGE_ENDPOINT_KINDS[edgeType as EdgeType];
+  if (!endpoints) return null;
+
+  if (selfKind === endpoints.from && fromId === selfId) {
+    return { relatedEntityType: endpoints.to, relatedId: toId };
   }
-  if (edgeType === PrismaEdgeType.miracle_source) {
-    if (selfKind === 'miracle' && fromId === selfId) {
-      return { relatedEntityType: 'source', relatedId: toId };
-    }
-    if (selfKind === 'source' && toId === selfId) {
-      return { relatedEntityType: 'miracle', relatedId: fromId };
-    }
-  }
-  if (edgeType === PrismaEdgeType.saint_source) {
-    if (selfKind === 'saint' && fromId === selfId) {
-      return { relatedEntityType: 'source', relatedId: toId };
-    }
-    if (selfKind === 'source' && toId === selfId) {
-      return { relatedEntityType: 'saint', relatedId: fromId };
-    }
+  if (selfKind === endpoints.to && toId === selfId) {
+    return { relatedEntityType: endpoints.from, relatedId: fromId };
   }
   return null;
 }

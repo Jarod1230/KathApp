@@ -43,6 +43,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Accepted suggestions could write edges pointing at nothing.** The accept path took `fromId` and `toId` straight from the payload after only a presence check, so an edge could reference a non-existent id, a soft-deleted entity, or an entity of the wrong kind for its type (a `saint_miracle` edge ending at a Source). The read paths skip such rows silently, so the damage would have shown up as content quietly missing from pages rather than as an error. Both write paths now validate the endpoints inside the accept transaction.
+
+### Added
+
+- `EDGE_ENDPOINT_KINDS` in `packages/shared`: which entity kind sits at each end of a typed edge. It was previously only a comment, restated as an if-chain in the read path and not checked at all on write. Read path, write path and contract now share one definition.
+- ADR 0005 (proposed) — referential integrity for graph endpoints, recording the options for enforcing this in the database rather than only in the application
 - **`GET /v1/search` answered 400 unless both paging parameters were sent.** A `ParseIntPipe` on `limit` and `offset` rejected the request before it reached the service, so the plain search the web client makes was broken. It also contradicted ADR 0004, which requires malformed paging to be clamped rather than rejected. Parsing and clamping now happen in the service, where the ADR's rule already lived.
 
 ### Added
