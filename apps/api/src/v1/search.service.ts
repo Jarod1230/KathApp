@@ -27,8 +27,9 @@ export type SearchParams = {
   q?: string;
   locale?: string;
   type?: string;
-  limit?: number;
-  offset?: number;
+  /** Raw query-string values are accepted; ADR 0004 clamps rather than rejects. */
+  limit?: number | string;
+  offset?: number | string;
 };
 
 type CandidateRow = { kind: PublicEntityKind; id: string };
@@ -43,15 +44,27 @@ function parseType(raw: string | undefined): PublicEntityKind | null {
 /**
  * ADR 0004: out-of-range paging is clamped, never rejected. A public read
  * surface should not answer a malformed page cursor with a 400.
+ *
+ * Parsing happens here rather than in a controller pipe. A ParseIntPipe turned
+ * every request without both parameters into a 400, which is exactly the
+ * rejection the ADR rules out.
  */
-function clampLimit(raw: number | undefined): number {
-  if (raw === undefined || !Number.isFinite(raw)) return SEARCH_DEFAULT_LIMIT;
-  return Math.min(SEARCH_MAX_LIMIT, Math.max(1, Math.trunc(raw)));
+function toNumber(raw: number | string | undefined): number {
+  if (typeof raw === 'number') return raw;
+  if (typeof raw !== 'string' || raw.trim() === '') return Number.NaN;
+  return Number(raw);
 }
 
-function clampOffset(raw: number | undefined): number {
-  if (raw === undefined || !Number.isFinite(raw)) return 0;
-  return Math.max(0, Math.trunc(raw));
+function clampLimit(raw: number | string | undefined): number {
+  const value = toNumber(raw);
+  if (!Number.isFinite(value)) return SEARCH_DEFAULT_LIMIT;
+  return Math.min(SEARCH_MAX_LIMIT, Math.max(1, Math.trunc(value)));
+}
+
+function clampOffset(raw: number | string | undefined): number {
+  const value = toNumber(raw);
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.trunc(value));
 }
 
 /** Neutralize LIKE wildcards so a query for "100%" is not a prefix match. */

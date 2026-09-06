@@ -204,6 +204,23 @@ export const EDGE_TYPES: readonly EdgeType[] = [
   'saint_source',
 ] as const;
 
+/**
+ * Which entity kind sits at each end of a typed edge. The type name reads
+ * from → to, so `saint_miracle` runs from a Saint to a Miracle.
+ *
+ * This was previously only a comment. Both the write path (validating a
+ * suggested edge before it is stored) and the read path (working out which end
+ * is the related one) need it, and a comment cannot be checked.
+ */
+export const EDGE_ENDPOINT_KINDS: Record<
+  EdgeType,
+  { from: PublicEntityKind; to: PublicEntityKind }
+> = {
+  saint_miracle: { from: 'saint', to: 'miracle' },
+  miracle_source: { from: 'miracle', to: 'source' },
+  saint_source: { from: 'saint', to: 'source' },
+};
+
 export const SUGGESTION_STATUSES: readonly SuggestionStatus[] = [
   'submitted',
   'in_review',
