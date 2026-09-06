@@ -1,14 +1,22 @@
 import { Link, useParams, useSearch } from '@tanstack/react-router';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import type { EntityType } from '@kathapp/shared';
+import type { PublicEntityKind } from '@kathapp/shared';
 import {
   contentLocaleFromSearch,
   resolveContentLocale,
 } from '../lib/contentLocale';
+import { ApiError, getEntityDetail } from '../lib/api';
 
-type DetailKind = 'saint' | 'miracle' | 'source';
+type DetailKind = PublicEntityKind;
 
-/** Registry-style detail stub — new entityTypes plug in without layout rewrite. */
+function relatedRoute(kind: PublicEntityKind): string {
+  if (kind === 'saint') return 'saints';
+  if (kind === 'miracle') return 'miracles';
+  return 'sources';
+}
+
+/** Registry-style detail — wired to GET /v1/{saints|miracles|sources}/:id. */
 export function EntityDetailPage({ kind }: { kind: DetailKind }) {
   const { t, i18n } = useTranslation('entity');
   const locale = i18n.language === 'en' ? 'en' : 'de';
@@ -18,58 +26,165 @@ export function EntityDetailPage({ kind }: { kind: DetailKind }) {
     contentLocaleFromSearch(search),
     locale,
   );
-  const entityType: EntityType = kind;
+
+  const query = useQuery({
+    queryKey: ['entity', kind, id, contentLocale],
+    enabled: Boolean(id),
+    queryFn: () => getEntityDetail(kind, id!, contentLocale),
+    retry: (failureCount, error) => {
+      if (error instanceof ApiError && error.status === 404) return false;
+      return failureCount < 2;
+    },
+  });
+
+  const notFound =
+    query.error instanceof ApiError && query.error.status === 404;
 
   return (
     <article className="space-y-6">
       <header className="space-y-2">
         <p className="text-sm text-muted">
-          {t('detail.kind')}: {entityType} · id: {id ?? '—'}
+          {t('detail.kind')}: {kind} · id: {id ?? '—'}
         </p>
-        <h1 className="text-2xl font-semibold">{t(`detail.title.${kind}`)}</h1>
-        <p className="text-muted">{t('detail.stub')}</p>
-        <p className="text-sm text-muted">
-          {t('detail.contentLocale')}: {contentLocale}
-        </p>
+        {query.isLoading && (
+          <p className="text-muted">{t('detail.loading')}</p>
+        )}
+        {notFound && (
+          <>
+            <h1 className="text-2xl font-semibold">{t('detail.notFoundTitle')}</h1>
+            <p className="text-muted">{t('detail.notFound')}</p>
+          </>
+        )}
+        {query.isError && !notFound && (
+          <p className="text-sm text-red-700" role="alert">
+            {t('detail.error')}
+          </p>
+        )}
+        {query.data && (
+          <>
+            <h1 className="text-2xl font-semibold">{query.data.label}</h1>
+            <p className="text-sm text-muted">
+              {t('detail.contentLocale')}: {query.data.locale}
+            </p>
+          </>
+        )}
       </header>
 
-      <section aria-labelledby="body-slot" className="space-y-2">
-        <h2 id="body-slot" className="text-lg font-medium">
-          {t('slots.body')}
-        </h2>
-        <p className="text-sm text-muted">{t('slots.bodyStub')}</p>
-      </section>
+      {query.data && (
+        <>
+          <section aria-labelledby="body-slot" className="space-y-2">
+            <h2 id="body-slot" className="text-lg font-medium">
+              {t('slots.body')}
+            </h2>
+            {query.data.body ? (
+              <p className="text-sm leading-relaxed">{query.data.body}</p>
+            ) : (
+              <p className="text-sm text-muted">{t('slots.bodyEmpty')}</p>
+            )}
+            {kind === 'saint' && query.data.saint?.feastNote ? (
+              <p className="text-sm text-muted">
+                {t('detail.feastNote')}: {query.data.saint.feastNote}
+              </p>
+            ) : null}
+            {kind === 'miracle' && query.data.miracle?.approxDate ? (
+              <p className="text-sm text-muted">
+                {t('detail.approxDate')}: {query.data.miracle.approxDate}
+              </p>
+            ) : null}
+            {kind === 'source' && query.data.source ? (
+              <dl className="grid gap-1 text-sm text-muted">
+                <div>
+                  <dt className="inline font-medium text-text">
+                    {t('detail.language')}:{' '}
+                  </dt>
+                  <dd className="inline">{query.data.source.language}</dd>
+                </div>
+                {query.data.source.author ? (
+                  <div>
+                    <dt className="inline font-medium text-text">
+                      {t('detail.author')}:{' '}
+                    </dt>
+                    <dd className="inline">{query.data.source.author}</dd>
+                  </div>
+                ) : null}
+                {query.data.source.year != null ? (
+                  <div>
+                    <dt className="inline font-medium text-text">
+                      {t('detail.year')}:{' '}
+                    </dt>
+                    <dd className="inline">{query.data.source.year}</dd>
+                  </div>
+                ) : null}
+              </dl>
+            ) : null}
+          </section>
 
-      <section aria-labelledby="citations-slot" className="space-y-2">
-        <h2 id="citations-slot" className="text-lg font-medium">
-          {t('slots.citations')}
-        </h2>
-        <p className="text-sm text-muted">{t('slots.citationsStub')}</p>
-        <button
-          type="button"
-          className="rounded-md border border-border bg-surface px-3 py-2 text-left text-sm shadow-elev-1"
-        >
-          <span className="font-medium">{t('citation.tappable')}</span>
-          <span className="mt-1 block font-serif text-muted">
-            {t('citation.latinHint')}
-          </span>
-        </button>
-      </section>
+          <section aria-labelledby="citations-slot" className="space-y-2">
+            <h2 id="citations-slot" className="text-lg font-medium">
+              {t('slots.citations')}
+            </h2>
+            {query.data.citations.length === 0 ? (
+              <p className="text-sm text-muted">{t('slots.citationsEmpty')}</p>
+            ) : (
+              <ul className="space-y-2">
+                {query.data.citations.map((c) => (
+                  <li key={c.id}>
+                    <Link
+                      to="/$locale/sources/$id"
+                      params={{ locale, id: c.sourceId }}
+                      search={{ contentLocale }}
+                      className="block rounded-md border border-border bg-surface px-3 py-2 text-left text-sm shadow-elev-1"
+                    >
+                      <span className="font-medium">
+                        {c.sourceTitle ?? c.sourceId} — {c.locus}
+                      </span>
+                      {c.excerpt ? (
+                        <span className="mt-1 block text-muted">{c.excerpt}</span>
+                      ) : null}
+                      {c.excerptLatin ? (
+                        <span className="mt-1 block font-serif text-muted">
+                          {c.excerptLatin}
+                        </span>
+                      ) : null}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
 
-      <section aria-labelledby="relations-slot" className="space-y-2">
-        <h2 id="relations-slot" className="text-lg font-medium">
-          {t('slots.relations')}
-        </h2>
-        <p className="text-sm text-muted">{t('slots.relationsStub')}</p>
-        <div className="flex flex-wrap gap-2">
-          <span className="rounded-full border border-border px-3 py-1 text-sm">
-            {t('chips.slot')}
-          </span>
-        </div>
-      </section>
+          <section aria-labelledby="relations-slot" className="space-y-2">
+            <h2 id="relations-slot" className="text-lg font-medium">
+              {t('slots.relations')}
+            </h2>
+            {query.data.edges.length === 0 ? (
+              <p className="text-sm text-muted">{t('slots.relationsEmpty')}</p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {query.data.edges.map((edge) => (
+                  <Link
+                    key={edge.id}
+                    to={`/$locale/${relatedRoute(edge.relatedEntityType)}/$id`}
+                    params={{ locale, id: edge.relatedId }}
+                    search={{ contentLocale }}
+                    className="rounded-full border border-border px-3 py-1 text-sm hover:bg-muted/20"
+                    title={edge.type}
+                  >
+                    {edge.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </section>
+        </>
+      )}
 
       <p>
-        <Link to="/$locale/search" params={{ locale }} className="text-sm text-accent">
+        <Link
+          to="/$locale/search"
+          params={{ locale }}
+          className="text-sm text-accent"
+        >
           {t('detail.backSearch')}
         </Link>
       </p>
