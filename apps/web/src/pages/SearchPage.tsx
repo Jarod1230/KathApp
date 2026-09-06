@@ -1,17 +1,62 @@
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import type { PublicEntityKind } from '@kathapp/shared';
+import type { PublicEntityKind, SearchHit } from '@kathapp/shared';
 import {
   contentLocaleFromSearch,
   resolveContentLocale,
 } from '../lib/contentLocale';
-import { ApiError, searchEntities } from '../lib/api';
+import { searchEntities } from '../lib/api';
 
-function entityPath(kind: PublicEntityKind): string {
-  if (kind === 'saint') return 'saints';
-  if (kind === 'miracle') return 'miracles';
-  return 'sources';
+function EntityHitLink({
+  hit,
+  locale,
+  contentLocale,
+  children,
+  className,
+}: {
+  hit: SearchHit;
+  locale: string;
+  contentLocale: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const params = { locale, id: hit.id };
+  const search = { contentLocale };
+  if (hit.entityType === 'saint') {
+    return (
+      <Link
+        to="/$locale/saints/$id"
+        params={params}
+        search={search}
+        className={className}
+      >
+        {children}
+      </Link>
+    );
+  }
+  if (hit.entityType === 'miracle') {
+    return (
+      <Link
+        to="/$locale/miracles/$id"
+        params={params}
+        search={search}
+        className={className}
+      >
+        {children}
+      </Link>
+    );
+  }
+  return (
+    <Link
+      to="/$locale/sources/$id"
+      params={params}
+      search={search}
+      className={className}
+    >
+      {children}
+    </Link>
+  );
 }
 
 export function SearchPage() {
@@ -105,9 +150,7 @@ export function SearchPage() {
 
       {query.isError && (
         <p className="text-sm text-red-700" role="alert">
-          {query.error instanceof ApiError && query.error.status === 0
-            ? t('search.error')
-            : t('search.error')}
+          {t('search.error')}
         </p>
       )}
 
@@ -121,14 +164,14 @@ export function SearchPage() {
         <ul className="divide-y divide-border rounded-md border border-border bg-surface">
           {items.map((hit) => (
             <li key={`${hit.entityType}:${hit.id}`}>
-              <Link
-                to={`/$locale/${entityPath(hit.entityType)}/$id`}
-                params={{ locale, id: hit.id }}
-                search={{ contentLocale }}
+              <EntityHitLink
+                hit={hit}
+                locale={locale}
+                contentLocale={contentLocale}
                 className="block px-3 py-3 hover:bg-muted/20"
               >
                 <span className="text-xs uppercase tracking-wide text-muted">
-                  {t(`chips.${hit.entityType}`)}
+                  {t(`chips.${hit.entityType}` as 'chips.saint')}
                 </span>
                 <span className="mt-1 block font-medium">{hit.label}</span>
                 {hit.snippet ? (
@@ -136,7 +179,7 @@ export function SearchPage() {
                     {hit.snippet}
                   </span>
                 ) : null}
-              </Link>
+              </EntityHitLink>
             </li>
           ))}
         </ul>
@@ -144,3 +187,6 @@ export function SearchPage() {
     </section>
   );
 }
+
+// silence unused type import if tree-shaken oddly
+void 0 as unknown as PublicEntityKind;

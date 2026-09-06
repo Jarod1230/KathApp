@@ -1,7 +1,7 @@
 import { Link, useParams, useSearch } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import type { PublicEntityKind } from '@kathapp/shared';
+import type { EdgeChip, PublicEntityKind } from '@kathapp/shared';
 import {
   contentLocaleFromSearch,
   resolveContentLocale,
@@ -10,10 +10,56 @@ import { ApiError, getEntityDetail } from '../lib/api';
 
 type DetailKind = PublicEntityKind;
 
-function relatedRoute(kind: PublicEntityKind): string {
-  if (kind === 'saint') return 'saints';
-  if (kind === 'miracle') return 'miracles';
-  return 'sources';
+function RelatedChipLink({
+  edge,
+  locale,
+  contentLocale,
+}: {
+  edge: EdgeChip;
+  locale: string;
+  contentLocale: string;
+}) {
+  const params = { locale, id: edge.relatedId };
+  const search = { contentLocale };
+  const className =
+    'rounded-full border border-border px-3 py-1 text-sm hover:bg-muted/20';
+  if (edge.relatedEntityType === 'saint') {
+    return (
+      <Link
+        to="/$locale/saints/$id"
+        params={params}
+        search={search}
+        className={className}
+        title={edge.type}
+      >
+        {edge.label}
+      </Link>
+    );
+  }
+  if (edge.relatedEntityType === 'miracle') {
+    return (
+      <Link
+        to="/$locale/miracles/$id"
+        params={params}
+        search={search}
+        className={className}
+        title={edge.type}
+      >
+        {edge.label}
+      </Link>
+    );
+  }
+  return (
+    <Link
+      to="/$locale/sources/$id"
+      params={params}
+      search={search}
+      className={className}
+      title={edge.type}
+    >
+      {edge.label}
+    </Link>
+  );
 }
 
 /** Registry-style detail — wired to GET /v1/{saints|miracles|sources}/:id. */
@@ -162,16 +208,12 @@ export function EntityDetailPage({ kind }: { kind: DetailKind }) {
             ) : (
               <div className="flex flex-wrap gap-2">
                 {query.data.edges.map((edge) => (
-                  <Link
+                  <RelatedChipLink
                     key={edge.id}
-                    to={`/$locale/${relatedRoute(edge.relatedEntityType)}/$id`}
-                    params={{ locale, id: edge.relatedId }}
-                    search={{ contentLocale }}
-                    className="rounded-full border border-border px-3 py-1 text-sm hover:bg-muted/20"
-                    title={edge.type}
-                  >
-                    {edge.label}
-                  </Link>
+                    edge={edge}
+                    locale={locale}
+                    contentLocale={contentLocale}
+                  />
                 ))}
               </div>
             )}
