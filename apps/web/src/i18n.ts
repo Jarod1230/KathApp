@@ -4,6 +4,12 @@ import { initReactI18next } from 'react-i18next';
 const de = {
   common: {
     appName: 'KathApp',
+    theme: {
+      label: 'Farbschema',
+      system: 'System',
+      light: 'Hell',
+      dark: 'Dunkel',
+    },
     nav: {
       main: 'Hauptnavigation',
       home: 'Start',
@@ -225,6 +231,12 @@ const de = {
 const en = {
   common: {
     appName: 'KathApp',
+    theme: {
+      label: 'Colour scheme',
+      system: 'System',
+      light: 'Light',
+      dark: 'Dark',
+    },
     nav: {
       main: 'Main navigation',
       home: 'Home',
