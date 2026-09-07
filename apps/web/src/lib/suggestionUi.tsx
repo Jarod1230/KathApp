@@ -1,4 +1,5 @@
 import type { SuggestionStatus } from '@kathapp/shared';
+import { Banner } from '../components/Banner';
 import type { ApiError } from './api';
 
 /** Status chip token colors: accepted→success, rejected→danger, queue states→warning. */
@@ -48,39 +49,18 @@ export function GateFailureList({
   labelFor: (code: string) => string;
 }) {
   return (
-    <div
-      className="rounded-md border border-danger/40 bg-danger/10 p-3 text-sm text-danger"
-      role="alert"
-    >
-      <p className="font-medium">{title}</p>
-      <ul className="mt-2 list-inside list-disc space-y-1">
-        {gates.map((code) => (
-          <li key={code}>
-            <span className="font-mono text-xs">{code}</span>
-            {': '}
-            {labelFor(code)}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <Banner
+      tone="gates"
+      title={title}
+      items={gates.map((code) => ({ key: code, label: labelFor(code) }))}
+    />
   );
 }
 
 export function AuthErrorBanner({ message }: { message: string }) {
-  return (
-    <p
-      className="rounded-md border border-warning/40 bg-warning/10 p-3 text-sm text-warning"
-      role="alert"
-    >
-      {message}
-    </p>
-  );
+  return <Banner tone="denied">{message}</Banner>;
 }
 
 export function GenericErrorBanner({ message }: { message: string }) {
-  return (
-    <p className="rounded-md border border-danger/40 bg-danger/10 p-3 text-sm text-danger" role="alert">
-      {message}
-    </p>
-  );
+  return <Banner tone="error">{message}</Banner>;
 }
