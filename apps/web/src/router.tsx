@@ -28,7 +28,7 @@ import {
   AdminSaintsListPage,
   AdminSourceEditPage,
   AdminSourcesListPage,
-} from './pages/AdminPages';
+} from './pages/admin';
 
 function LocaleSync({
   locale,
