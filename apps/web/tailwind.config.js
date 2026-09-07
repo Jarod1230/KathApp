@@ -55,6 +55,17 @@ export default {
         xl: 'var(--text-xl)',
         '2xl': 'var(--text-2xl)',
         '3xl': 'var(--text-3xl)',
+        display: 'var(--text-display)',
+      },
+      lineHeight: {
+        tight: 'var(--leading-tight)',
+        prose: 'var(--leading-prose)',
+      },
+      letterSpacing: {
+        label: 'var(--tracking-label)',
+      },
+      maxWidth: {
+        measure: 'var(--measure)',
       },
     },
   },

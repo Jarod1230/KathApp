@@ -19,3 +19,14 @@ body {
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
+
+/* Die Vorgaben erlauben Bewegung nur bei Fokus und Hover — und auch die
+   nicht, wenn der Nutzer sie abbestellt hat. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
