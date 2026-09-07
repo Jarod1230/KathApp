@@ -157,7 +157,7 @@ export function SearchPage() {
         </select>
         <button
           type="submit"
-          className="rounded-md bg-accent px-3 py-2 text-sm text-white"
+          className="rounded-md bg-accent px-3 py-2 text-sm text-on-accent"
         >
           {t('search.submit')}
         </button>

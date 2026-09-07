@@ -10,6 +10,8 @@ export default {
         text: 'var(--color-text)',
         muted: 'var(--color-text-muted)',
         accent: 'var(--color-accent)',
+        'accent-text': 'var(--color-accent-text)',
+        'on-accent': 'var(--color-on-accent)',
         focus: 'var(--color-focus)',
         border: 'var(--color-border)',
         danger: 'var(--color-danger)',
@@ -55,6 +57,17 @@ export default {
         xl: 'var(--text-xl)',
         '2xl': 'var(--text-2xl)',
         '3xl': 'var(--text-3xl)',
+        display: 'var(--text-display)',
+      },
+      lineHeight: {
+        tight: 'var(--leading-tight)',
+        prose: 'var(--leading-prose)',
+      },
+      letterSpacing: {
+        label: 'var(--tracking-label)',
+      },
+      maxWidth: {
+        measure: 'var(--measure)',
       },
     },
   },

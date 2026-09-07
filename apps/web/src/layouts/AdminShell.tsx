@@ -1,6 +1,7 @@
 import { Link, Outlet } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../lib/auth';
+import { ThemeToggle } from '../components/ThemeToggle';
 
 export function AdminShell() {
   const { t, i18n } = useTranslation('admin');
@@ -12,7 +13,7 @@ export function AdminShell() {
     <div className="min-h-screen bg-bg text-text">
       <header className="border-b border-border bg-surface px-4 py-3 shadow-elev-1 md:px-6">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-4">
-          <span className="text-xl font-semibold text-accent">{t('shellTitle')}</span>
+          <span className="font-serif text-xl font-semibold text-accent-text">{t('shellTitle')}</span>
           <nav className="flex flex-wrap gap-3 text-sm" aria-label={t('navLabel')}>
             <Link to="/admin/$locale" params={{ locale }}>
               {t('nav.dashboard')}
@@ -33,13 +34,14 @@ export function AdminShell() {
               {tc('nav.backPublic')}
             </Link>
           </nav>
-          <div className="ml-auto text-xs text-muted">
+          <div className="ml-auto flex items-center gap-3 text-xs text-muted">
+            <ThemeToggle />
             {ready && user ? (
               <span>
                 {user.email} · {user.role}
               </span>
             ) : ready ? (
-              <Link to="/admin/$locale" params={{ locale }} className="text-accent">
+              <Link to="/admin/$locale" params={{ locale }} className="text-accent-text">
                 {tc('auth.login')}
               </Link>
             ) : null}

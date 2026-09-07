@@ -13,6 +13,12 @@
   --color-text: #1a1f2e;
   --color-text-muted: #5c6b7a;
   --color-accent: #c9a227;
+  /* Gold als Textfarbe. Das helle Gold erreicht auf dem hellen Grund nur
+     2,22:1; dieser dunklere Ton derselben Familie erreicht 4,64:1. */
+  --color-accent-text: #8a6a12;
+  /* Schrift auf einer Goldflaeche. Die Flaeche ist in beiden Themes
+     dieselbe, also ist es diese Farbe auch. */
+  --color-on-accent: #1a1f2e;
   --color-focus: #5b9fd4;
   --color-border: #d8dee6;
   --color-danger: #d64545;
@@ -54,6 +60,37 @@
   --text-xl: 1.25rem;
   --text-2xl: 1.5rem;
   --text-3xl: 1.875rem;
+  --text-display: 2.5rem;
+
+  --leading-tight: 1.12;
+  --leading-prose: 1.68;
+
+  /* Zeilenlänge für Fließtext; alles darüber liest sich schlecht. */
+  --measure: 66ch;
+
+  --tracking-label: 0.16em;
+}
+
+/* Betriebssystem-Einstellung. Die :not()-Bedingung sorgt dafür, dass eine
+   ausdrückliche Wahl "hell" ein dunkles Betriebssystem schlägt. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-bg: #0f1419;
+    --color-surface: #1a2332;
+    --color-text: #f2f4f8;
+    --color-text-muted: #9aa7b8;
+    --color-accent: #c9a227;
+    --color-accent-text: #c9a227;
+    --color-on-accent: #1a1f2e;
+    --color-focus: #5b9fd4;
+    --color-border: #2c3a4d;
+    --color-danger: #d64545;
+    --color-success: #51cf66;
+    --color-warning: #fcc419;
+
+    --elev-0: none;
+    --elev-1: 0 1px 3px rgba(0, 0, 0, 0.45), 0 1px 2px rgba(0, 0, 0, 0.35);
+  }
 }
 
 /* Dark theme */
@@ -64,6 +101,8 @@
   --color-text: #f2f4f8;
   --color-text-muted: #9aa7b8;
   --color-accent: #c9a227;
+  --color-accent-text: #c9a227;
+  --color-on-accent: #1a1f2e;
   --color-focus: #5b9fd4;
   --color-border: #2c3a4d;
   --color-danger: #d64545;

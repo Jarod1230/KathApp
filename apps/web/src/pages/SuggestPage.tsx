@@ -231,7 +231,7 @@ export function SuggestPage() {
           <button
             type="submit"
             disabled={loginBusy}
-            className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-bg disabled:opacity-60"
+            className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-on-accent disabled:opacity-60"
           >
             {loginBusy ? t('login.busy') : t('login.submit')}
           </button>
@@ -408,7 +408,7 @@ export function SuggestPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-bg disabled:opacity-60"
+          className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-on-accent disabled:opacity-60"
         >
           {submitting ? t('form.submitting') : t('form.submit')}
         </button>
