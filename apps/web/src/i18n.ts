@@ -22,11 +22,11 @@ const de = {
       login: 'Anmelden',
     },
     home: {
-      title: 'Willkommen',
+      title: 'Katholisches Wissen, mit Quelle',
       blurb:
-        'Mehrsprachiger Wissenshub — UI-Locale in der URL, Content-Locale getrennt.',
+        'Heilige, Wunder und die Quellen, die sie belegen. Jede Angabe führt auf die Stelle zurück, aus der sie stammt.',
       localeNote:
-        'Öffentliche Shell. Keine erfundenen Heiligen-/Wunderinhalte.',
+        'Inhalte kommen ausschließlich über geprüfte Vorschläge herein.',
       ctaSearch: 'Zur Suche',
     },
   },
@@ -250,10 +250,10 @@ const en = {
       login: 'Log in',
     },
     home: {
-      title: 'Welcome',
+      title: 'Catholic knowledge, with its sources',
       blurb:
-        'Multilingual knowledge hub — UI locale in the URL, content locale separate.',
-      localeNote: 'Public shell. No invented saint/miracle content.',
+        'Saints, miracles and the sources that attest them. Every statement leads back to the passage it came from.',
+      localeNote: 'Content enters only through reviewed suggestions.',
       ctaSearch: 'Go to search',
     },
   },
