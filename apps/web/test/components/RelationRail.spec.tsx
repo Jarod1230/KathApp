@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
 import type { EdgeChip } from '@kathapp/shared';
 import { RelationRail } from '../../src/components/RelationRail';
@@ -43,7 +43,11 @@ describe('RelationRail', () => {
     expect(rendered.textContent).toContain('Isidor von Sevilla');
   });
 
-  it('keys by edge id, so two relations to the same entity both render', () => {
+  it('keys by edge id, so two relations to the same entity stay distinct', () => {
+    // React renders duplicate-keyed siblings anyway and only warns, so the
+    // rendered output cannot catch this. Watch for the warning instead.
+    const warned = vi.spyOn(console, 'error').mockImplementation(() => {});
+
     render(
       <RelationRail
         title="Verknüpft"
@@ -54,6 +58,12 @@ describe('RelationRail', () => {
         ]}
       />,
     );
+
     expect(screen.getAllByRole('link').length).toBe(2);
+    const keyWarnings = warned.mock.calls
+      .map((call) => String(call[0]))
+      .filter((message) => /same key|unique "key"/i.test(message));
+    expect(keyWarnings).toEqual([]);
+    warned.mockRestore();
   });
 });
