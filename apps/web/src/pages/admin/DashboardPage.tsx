@@ -4,7 +4,13 @@ import { useTranslation } from 'react-i18next';
 import type { Role } from '@kathapp/shared';
 import { ApiError } from '../../lib/api';
 import { useAuth } from '../../lib/auth';
-import { GenericErrorBanner } from '../../lib/suggestionUi';
+import {
+  Banner,
+  Button,
+  PageHeader,
+  SelectField,
+  TextField,
+} from '../../components';
 
 const DEV_ROLES: Role[] = ['contributor', 'reviewer', 'admin'];
 
@@ -38,26 +44,19 @@ export function DevLoginPanel({
 
   return (
     <section className="space-y-4">
-      <h1 className="text-2xl font-semibold">{title}</h1>
+      <PageHeader title={title} />
       <p className="text-muted">{t('login.required')}</p>
       <form
         className="max-w-lg space-y-4 rounded-lg border border-border bg-surface p-4 shadow-elev-1 md:p-6"
         onSubmit={onSubmit}
       >
-        <label className="block space-y-1 text-sm">
-          <span className="font-medium">{t('login.email')}</span>
-          <input
+        <TextField label={t('login.email')}
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-md border border-border bg-bg px-3 py-2"
-            autoComplete="username"
-          />
-        </label>
-        <label className="block space-y-1 text-sm">
-          <span className="font-medium">{t('login.role')}</span>
-          <select
+            autoComplete="username" />
+        <SelectField label={t('login.role')}
             value={role}
             onChange={(e) => setRole(e.target.value as Role)}
             className="w-full rounded-md border border-border bg-bg px-3 py-2"
@@ -67,16 +66,9 @@ export function DevLoginPanel({
                 {r}
               </option>
             ))}
-          </select>
-        </label>
-        {error && <GenericErrorBanner message={error} />}
-        <button
-          type="submit"
-          disabled={busy}
-          className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-on-accent disabled:opacity-60"
-        >
-          {busy ? t('login.busy') : t('login.submit')}
-        </button>
+          </SelectField>
+        {error && <Banner tone="error">{error}</Banner>}
+        <Button type="submit" busy={busy} className="self-start">{busy ? t('login.busy') : t('login.submit')}</Button>
       </form>
     </section>
   );
@@ -101,7 +93,7 @@ export function AdminDashboardPage() {
 
   return (
     <section className="space-y-4">
-      <h1 className="text-2xl font-semibold">{t('dashboard.title')}</h1>
+      <PageHeader title={t('dashboard.title')} />
       <div className="max-w-lg space-y-3 rounded-lg border border-border bg-surface p-4 shadow-elev-1 md:p-6">
         <p className="text-sm">
           <span className="text-muted">{t('dashboard.email')}: </span>
@@ -119,13 +111,7 @@ export function AdminDashboardPage() {
           >
             {t('dashboard.toReview')}
           </Link>
-          <button
-            type="button"
-            onClick={() => logout()}
-            className="rounded-md border border-border px-3 py-2 text-sm"
-          >
-            {t('dashboard.logout')}
-          </button>
+          <Button variant="secondary" onClick={() => logout()}>{t('dashboard.logout')}</Button>
         </div>
       </div>
     </section>

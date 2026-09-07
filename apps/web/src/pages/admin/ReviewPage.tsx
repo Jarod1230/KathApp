@@ -11,11 +11,18 @@ import {
 } from '../../lib/api';
 import { roleAtLeast, useAuth } from '../../lib/auth';
 import {
+  Button,
+  EmptyState,
+  PageHeader,
+  SelectField,
+  SuggestionStatusChip,
+  TextField,
+} from '../../components';
+import {
   AuthErrorBanner,
   GateFailureList,
   GenericErrorBanner,
   classifyApiError,
-  suggestionStatusChipClass,
 } from '../../lib/suggestionUi';
 import { DevLoginPanel } from './DashboardPage';
 
@@ -130,9 +137,7 @@ function ReviewRow({
           </Link>
           <p className="mt-1 flex flex-wrap items-center gap-2 text-sm">
             <span className="text-muted">{item.entityType}</span>
-            <span className={suggestionStatusChipClass(item.status)}>
-              {item.status}
-            </span>
+            <SuggestionStatusChip status={item.status} />
           </p>
           {item.reviewNote ? (
             <p className="mt-1 text-sm text-muted whitespace-pre-wrap">
@@ -144,30 +149,11 @@ function ReviewRow({
 
       {!resolved && (
         <div className="flex flex-wrap items-end gap-2">
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => acceptMut.mutate()}
-            className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-on-accent disabled:opacity-60"
-          >
-            {t('review.accept')}
-          </button>
-          <label className="flex min-w-[12rem] flex-1 flex-col gap-1 text-xs">
-            <span className="text-muted">{t('review.rejectNote')}</span>
-            <input
+          <Button busy={busy} onClick={() => acceptMut.mutate()}>{t('review.accept')}</Button>
+          <div className="min-w-[12rem] flex-1"><TextField label={t('review.rejectNote')}
               value={note}
-              onChange={(e) => setNote(e.target.value)}
-              className="rounded-md border border-border bg-bg px-2 py-1.5 text-sm"
-            />
-          </label>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => rejectMut.mutate()}
-            className="rounded-md border border-border px-3 py-1.5 text-sm disabled:opacity-60"
-          >
-            {t('review.reject')}
-          </button>
+              onChange={(e) => setNote(e.target.value)} /></div>
+          <Button variant="secondary" busy={busy} onClick={() => rejectMut.mutate()}>{t('review.reject')}</Button>
         </div>
       )}
 
@@ -216,7 +202,7 @@ export function AdminReviewPage() {
   if (!roleAtLeast(user.role, 'reviewer')) {
     return (
       <section className="space-y-4">
-        <h1 className="text-2xl font-semibold">{t('review.title')}</h1>
+        <PageHeader title={t('review.title')} />
         <AuthErrorBanner message={t('review.forbidden')} />
       </section>
     );
@@ -224,24 +210,19 @@ export function AdminReviewPage() {
 
   return (
     <section className="space-y-4">
-      <h1 className="text-2xl font-semibold">{t('review.title')}</h1>
+      <PageHeader title={t('review.title')} />
 
-      <label className="inline-flex items-center gap-2 text-sm">
-        <span className="font-medium">{t('review.statusFilter')}</span>
-        <select
+      <SelectField label={t('review.statusFilter')}
           value={status}
           onChange={(e) =>
             setStatus(e.target.value as SuggestionStatus | '')
-          }
-          className="rounded-md border border-border bg-surface px-3 py-2"
-        >
+          }>
           {STATUS_FILTERS.map((s) => (
             <option key={s || 'all'} value={s}>
               {s ? s : t('review.statusAll')}
             </option>
           ))}
-        </select>
-      </label>
+        </SelectField>
 
       {query.isLoading && (
         <p className="text-sm text-muted">{t('review.loading')}</p>
@@ -269,7 +250,7 @@ export function AdminReviewPage() {
       )}
 
       {!query.isLoading && !query.isError && (query.data?.length ?? 0) === 0 && (
-        <p className="text-muted">{t('review.empty')}</p>
+        <EmptyState message={t('review.empty')} />
       )}
 
       {!query.isLoading && (query.data?.length ?? 0) > 0 && (

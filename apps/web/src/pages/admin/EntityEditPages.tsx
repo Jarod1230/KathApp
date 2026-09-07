@@ -1,14 +1,15 @@
 import { useParams } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
+import { EmptyState, PageHeader } from '../../components';
 
 export function AdminSaintEditPage() {
   const { t } = useTranslation('admin');
   const { id } = useParams({ strict: false }) as { id?: string };
 
   return (
-    <section className="space-y-4">
-      <h1 className="text-2xl font-semibold">{t('edit.title.saints')}</h1>
-      <p className="text-muted">{t('edit.stub')}</p>
+    <section className="flex flex-col gap-4">
+      <PageHeader title={t('edit.title.saints')} />
+      <EmptyState message={t('edit.stub')} />
       <p className="text-sm">
         id: <code>{id ?? '—'}</code>
       </p>
@@ -21,9 +22,9 @@ export function AdminMiracleEditPage() {
   const { id } = useParams({ strict: false }) as { id?: string };
 
   return (
-    <section className="space-y-4">
-      <h1 className="text-2xl font-semibold">{t('edit.title.miracles')}</h1>
-      <p className="text-muted">{t('edit.stub')}</p>
+    <section className="flex flex-col gap-4">
+      <PageHeader title={t('edit.title.miracles')} />
+      <EmptyState message={t('edit.stub')} />
       <p className="text-sm">
         id: <code>{id ?? '—'}</code>
       </p>
@@ -36,9 +37,9 @@ export function AdminSourceEditPage() {
   const { id } = useParams({ strict: false }) as { id?: string };
 
   return (
-    <section className="space-y-4">
-      <h1 className="text-2xl font-semibold">{t('edit.title.sources')}</h1>
-      <p className="text-muted">{t('edit.stub')}</p>
+    <section className="flex flex-col gap-4">
+      <PageHeader title={t('edit.title.sources')} />
+      <EmptyState message={t('edit.stub')} />
       <p className="text-sm">
         id: <code>{id ?? '—'}</code>
       </p>
