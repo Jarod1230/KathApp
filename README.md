@@ -24,6 +24,7 @@ KathApp/
 │   ├── development.md
 │   ├── roadmap.md
 │   ├── glossary.md
+│   ├── design/              # Gestaltungsentwürfe
 │   └── decisions/           # ADRs (0001 tech stack, 0002 Contract-v1)
 ├── .github/workflows/ci.yml
 ├── CLAUDE.md                # Hard rules for agents
@@ -91,6 +92,7 @@ Full copy-paste steps: [`docs/development.md`](docs/development.md).
 - [Development](docs/development.md)
 - [Roadmap](docs/roadmap.md)
 - [Glossary](docs/glossary.md)
+- [Gestaltungsschicht `apps/web`](docs/design/2026-09-07-frontend-design-system.md)
 - [ADR 0001 — Tech stack](docs/decisions/0001-tech-stack.md)
 - [ADR 0002 — Contract-v1](docs/decisions/0002-contract-v1.md)
 - [CLAUDE.md](CLAUDE.md) · [AGENTS.md](AGENTS.md)
