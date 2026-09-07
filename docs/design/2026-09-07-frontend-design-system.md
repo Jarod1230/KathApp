@@ -122,7 +122,10 @@ Fünf aufeinander aufbauende, einzeln überprüfbare PRs:
 
 Nach Schritt 3 ist der für Besucher sichtbare Teil fertig. Bricht die Arbeit dort ab, ist der Stand trotzdem geschlossen.
 
+## Entschieden
+
+- **Abschnittsnamen** (2026-09-07, bestätigt). `Inhalt`, `Quellen` und `Verknüpfungen` stammen aus dem Datenmodell und werden zu `Beschreibung`, `Belegstellen` und `Verknüpft`. Betrifft die Schlüssel unter `entity.slots` in beiden Sprachen; die englische Seite wandert entsprechend auf `Description`, `References` und `Related`.
+
 ## Offene Punkte
 
-- **Abschnittsnamen.** `Inhalt`, `Quellen`, `Verknüpfungen` stammen aus dem Datenmodell. Vorgeschlagen sind `Beschreibung`, `Belegstellen`, `Verknüpft`. Das berührt Übersetzungsschlüssel in beiden Sprachen und sollte vor Schritt 3 bestätigt werden.
-- **Lizenzierte Textschrift.** Bewusst zurückgestellt. Sinnvollste spätere Steigerung, aber eine eigene Entscheidung.
+- **Lizenzierte Textschrift.** Bewusst zurückgestellt. Sinnvollste spätere Steigerung, aber eine eigene Entscheidung mit Lizenzfragen, die bei GPL-3.0 nicht trivial sind.
