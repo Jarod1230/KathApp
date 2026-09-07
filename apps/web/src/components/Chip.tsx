@@ -22,7 +22,7 @@ export function SuggestionStatusChip({ status }: { status: SuggestionStatus }) {
       data-testid="chip"
       data-status={status}
       data-resolved={resolved ? 'true' : 'false'}
-      className={`${BASE} ${resolved ? 'text-muted' : 'text-accent'}`}
+      className={`${BASE} ${resolved ? 'text-muted' : 'text-accent-text'}`}
     >
       {status}
     </span>

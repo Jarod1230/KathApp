@@ -13,6 +13,12 @@
   --color-text: #1a1f2e;
   --color-text-muted: #5c6b7a;
   --color-accent: #c9a227;
+  /* Gold als Textfarbe. Das helle Gold erreicht auf dem hellen Grund nur
+     2,22:1; dieser dunklere Ton derselben Familie erreicht 4,64:1. */
+  --color-accent-text: #8a6a12;
+  /* Schrift auf einer Goldflaeche. Die Flaeche ist in beiden Themes
+     dieselbe, also ist es diese Farbe auch. */
+  --color-on-accent: #1a1f2e;
   --color-focus: #5b9fd4;
   --color-border: #d8dee6;
   --color-danger: #d64545;
@@ -74,6 +80,8 @@
     --color-text: #f2f4f8;
     --color-text-muted: #9aa7b8;
     --color-accent: #c9a227;
+    --color-accent-text: #c9a227;
+    --color-on-accent: #1a1f2e;
     --color-focus: #5b9fd4;
     --color-border: #2c3a4d;
     --color-danger: #d64545;
@@ -93,6 +101,8 @@
   --color-text: #f2f4f8;
   --color-text-muted: #9aa7b8;
   --color-accent: #c9a227;
+  --color-accent-text: #c9a227;
+  --color-on-accent: #1a1f2e;
   --color-focus: #5b9fd4;
   --color-border: #2c3a4d;
   --color-danger: #d64545;

@@ -10,6 +10,8 @@ export default {
         text: 'var(--color-text)',
         muted: 'var(--color-text-muted)',
         accent: 'var(--color-accent)',
+        'accent-text': 'var(--color-accent-text)',
+        'on-accent': 'var(--color-on-accent)',
         focus: 'var(--color-focus)',
         border: 'var(--color-border)',
         danger: 'var(--color-danger)',

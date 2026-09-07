@@ -14,7 +14,7 @@ export function PageHeader({
       {kicker ? (
         <p
           data-slot="kicker"
-          className="text-xs uppercase tracking-label text-accent"
+          className="text-xs uppercase tracking-label text-accent-text"
         >
           {kicker}
         </p>

@@ -39,7 +39,7 @@ export function SuggestionStatusPage() {
         <Link
           to="/$locale/suggest"
           params={{ locale }}
-          className="text-sm text-accent"
+          className="text-sm text-accent-text"
         >
           {t('status.goLogin')}
         </Link>

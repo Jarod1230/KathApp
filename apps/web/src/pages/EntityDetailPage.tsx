@@ -226,7 +226,7 @@ export function EntityDetailPage({ kind }: { kind: DetailKind }) {
           to="/$locale/search"
           params={{ locale }}
           search={{ q: undefined, type: undefined, offset: undefined, contentLocale: undefined }}
-          className="text-sm text-accent"
+          className="text-sm text-accent-text"
         >
           {t('detail.backSearch')}
         </Link>

@@ -92,7 +92,7 @@ function DevLoginPanel({
         <button
           type="submit"
           disabled={busy}
-          className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-bg disabled:opacity-60"
+          className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-on-accent disabled:opacity-60"
         >
           {busy ? t('login.busy') : t('login.submit')}
         </button>
@@ -134,7 +134,7 @@ export function AdminDashboardPage() {
           <Link
             to="/admin/$locale/review"
             params={{ locale }}
-            className="rounded-md bg-accent px-3 py-2 text-sm font-medium text-bg"
+            className="rounded-md bg-accent px-3 py-2 text-sm font-medium text-on-accent"
           >
             {t('dashboard.toReview')}
           </Link>
@@ -248,7 +248,7 @@ function ReviewRow({
           <Link
             to="/$locale/suggestions/$id"
             params={{ locale, id: item.id }}
-            className="font-mono text-sm text-accent"
+            className="font-mono text-sm text-accent-text"
           >
             {item.id}
           </Link>
@@ -272,7 +272,7 @@ function ReviewRow({
             type="button"
             disabled={busy}
             onClick={() => acceptMut.mutate()}
-            className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-bg disabled:opacity-60"
+            className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-on-accent disabled:opacity-60"
           >
             {t('review.accept')}
           </button>
@@ -418,7 +418,7 @@ export function AdminSaintsListPage() {
       <Link
         to="/admin/$locale/saints/$id/edit"
         params={{ locale, id: 'stub' }}
-        className="text-sm text-accent"
+        className="text-sm text-accent-text"
       >
         {t('list.editStub')}
       </Link>
@@ -437,7 +437,7 @@ export function AdminMiraclesListPage() {
       <Link
         to="/admin/$locale/miracles/$id/edit"
         params={{ locale, id: 'stub' }}
-        className="text-sm text-accent"
+        className="text-sm text-accent-text"
       >
         {t('list.editStub')}
       </Link>
@@ -456,7 +456,7 @@ export function AdminSourcesListPage() {
       <Link
         to="/admin/$locale/sources/$id/edit"
         params={{ locale, id: 'stub' }}
-        className="text-sm text-accent"
+        className="text-sm text-accent-text"
       >
         {t('list.editStub')}
       </Link>

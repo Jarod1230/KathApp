@@ -15,7 +15,7 @@ export function PublicShell() {
           <Link
             to="/$locale"
             params={{ locale }}
-            className="font-serif text-xl font-semibold text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+            className="font-serif text-xl font-semibold text-accent-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
           >
             {t('appName')}
           </Link>
@@ -40,7 +40,7 @@ export function PublicShell() {
                 {user.email} · {user.role}
               </span>
             ) : ready ? (
-              <Link to="/$locale/suggest" params={{ locale }} className="text-accent">
+              <Link to="/$locale/suggest" params={{ locale }} className="text-accent-text">
                 {t('auth.login')}
               </Link>
             ) : null}
