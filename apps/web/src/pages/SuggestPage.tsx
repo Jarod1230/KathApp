@@ -10,6 +10,14 @@ import type {
 } from '@kathapp/shared';
 import { ApiError, createSuggestion } from '../lib/api';
 import { useAuth } from '../lib/auth';
+import {
+  Banner,
+  Button,
+  PageHeader,
+  SelectField,
+  TextAreaField,
+  TextField,
+} from '../components';
 import { sanitizeContentLocale } from '../lib/contentLocale';
 import {
   AuthErrorBanner,
@@ -195,54 +203,44 @@ export function SuggestPage() {
 
   if (!user) {
     return (
-      <section className="space-y-4">
-        <h1 className="text-2xl font-semibold">{t('form.title')}</h1>
+      <section className="flex flex-col gap-5">
+        <PageHeader title={t('form.title')} />
         <p className="text-muted">{t('login.required')}</p>
         <form
-          className="max-w-lg space-y-4 rounded-lg border border-border bg-surface p-4 shadow-elev-1 md:p-6"
+          className="flex max-w-lg flex-col gap-4 border border-border bg-surface p-4 md:p-6"
           onSubmit={onDevLogin}
         >
-          <label className="block space-y-1 text-sm">
-            <span className="font-medium">{t('login.email')}</span>
-            <input
-              type="email"
-              required
-              value={loginEmail}
-              onChange={(e) => setLoginEmail(e.target.value)}
-              className="w-full rounded-md border border-border bg-bg px-3 py-2"
-              autoComplete="username"
-            />
-          </label>
-          <label className="block space-y-1 text-sm">
-            <span className="font-medium">{t('login.role')}</span>
-            <select
-              value={loginRole}
-              onChange={(e) => setLoginRole(e.target.value as Role)}
-              className="w-full rounded-md border border-border bg-bg px-3 py-2"
-            >
-              {DEV_ROLES.map((r) => (
-                <option key={r} value={r}>
-                  {r}
-                </option>
-              ))}
-            </select>
-          </label>
-          {loginError && <GenericErrorBanner message={loginError} />}
-          <button
-            type="submit"
-            disabled={loginBusy}
-            className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-on-accent disabled:opacity-60"
+          <TextField
+            label={t('login.email')}
+            type="email"
+            required
+            value={loginEmail}
+            onChange={(e) => setLoginEmail(e.target.value)}
+            autoComplete="username"
+          />
+          <SelectField
+            label={t('login.role')}
+            value={loginRole}
+            onChange={(e) => setLoginRole(e.target.value as Role)}
           >
+            {DEV_ROLES.map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
+          </SelectField>
+          {loginError && <Banner tone="error">{loginError}</Banner>}
+          <Button type="submit" busy={loginBusy} className="self-start">
             {loginBusy ? t('login.busy') : t('login.submit')}
-          </button>
+          </Button>
         </form>
       </section>
     );
   }
 
   return (
-    <section className="space-y-4">
-      <h1 className="text-2xl font-semibold">{t('form.title')}</h1>
+    <section className="flex flex-col gap-5">
+      <PageHeader title={t('form.title')} />
       <p className="text-sm text-muted">
         {t('form.signedInAs', { email: user.email, role: user.role })}
       </p>
@@ -250,9 +248,7 @@ export function SuggestPage() {
         className="max-w-lg space-y-4 rounded-lg border border-border bg-surface p-4 shadow-elev-1 md:p-6"
         onSubmit={onSubmit}
       >
-        <label className="block space-y-1 text-sm">
-          <span className="font-medium">{t('form.entityType')}</span>
-          <select
+        <SelectField label={t('form.entityType')}
             value={entityType}
             onChange={(e) => setEntityType(e.target.value as PublicEntityKind)}
             className="w-full rounded-md border border-border bg-bg px-3 py-2"
@@ -262,12 +258,12 @@ export function SuggestPage() {
                 {t(`form.entityTypes.${k}`)}
               </option>
             ))}
-          </select>
-        </label>
+          </SelectField>
 
-        <label className="block space-y-1 text-sm">
-          <span className="font-medium">{t('form.contentLocale')}</span>
-          <input
+        <div>
+          <TextField
+            label={t('form.contentLocale')}
+            hint={t('form.contentLocaleHint')}
             value={contentLocale}
             onChange={(e) => setContentLocale(e.target.value)}
             onBlur={(e) =>
@@ -275,41 +271,25 @@ export function SuggestPage() {
             }
             list="content-locale-options"
             required
-            className="w-full rounded-md border border-border bg-bg px-3 py-2"
           />
           <datalist id="content-locale-options">
             {CONTENT_LOCALE_SUGGESTIONS.map((l) => (
               <option key={l} value={l} />
             ))}
           </datalist>
-          <span className="block text-xs text-muted">
-            {t('form.contentLocaleHint')}
-          </span>
-        </label>
+        </div>
 
-        <label className="block space-y-1 text-sm">
-          <span className="font-medium">{t('form.label')}</span>
-          <input
+        <TextField label={t('form.label')}
             value={label}
             onChange={(e) => setLabel(e.target.value)}
-            required
-            className="w-full rounded-md border border-border bg-bg px-3 py-2"
-          />
-        </label>
+            required />
 
-        <label className="block space-y-1 text-sm">
-          <span className="font-medium">{t('form.body')}</span>
-          <textarea
+        <TextAreaField label={t('form.body')}
             value={body}
             onChange={(e) => setBody(e.target.value)}
-            rows={4}
-            className="w-full rounded-md border border-border bg-bg px-3 py-2"
-          />
-        </label>
+            rows={4} />
 
-        <label className="block space-y-1 text-sm">
-          <span className="font-medium">{t('form.publishStatus')}</span>
-          <select
+        <SelectField label={t('form.publishStatus')}
             value={publishStatus}
             onChange={(e) =>
               setPublishStatus(e.target.value as PublishStatus)
@@ -318,77 +298,40 @@ export function SuggestPage() {
           >
             <option value="draft">{t('form.statusDraft')}</option>
             <option value="published">{t('form.statusPublished')}</option>
-          </select>
-        </label>
+          </SelectField>
 
         {entityType === 'source' && (
-          <label className="block space-y-1 text-sm">
-            <span className="font-medium">{t('form.sourceLanguage')}</span>
-            <input
+          <TextField label={t('form.sourceLanguage')}
               value={sourceLanguage}
               onChange={(e) => setSourceLanguage(e.target.value)}
-              className="w-full rounded-md border border-border bg-bg px-3 py-2"
-              placeholder="la"
-            />
-            <span className="text-xs text-muted">
-              {t('form.sourceLanguageHint')}
-            </span>
-          </label>
+              placeholder="la" />
         )}
 
         {entityType === 'miracle' && (
-          <label className="block space-y-1 text-sm">
-            <span className="font-medium">{t('form.relatedSaintId')}</span>
-            <input
+          <TextField label={t('form.relatedSaintId')}
               value={relatedSaintId}
               onChange={(e) => setRelatedSaintId(e.target.value)}
-              className="w-full rounded-md border border-border bg-bg px-3 py-2"
-              placeholder="uuid"
-            />
-            <span className="text-xs text-muted">
-              {t('form.relatedSaintHint')}
-            </span>
-          </label>
+              placeholder="uuid" />
         )}
 
         <fieldset className="space-y-3 rounded-md border border-border p-3">
           <legend className="px-1 text-sm font-medium">
             {t('form.citationOptional')}
           </legend>
-          <label className="block space-y-1 text-sm">
-            <span className="font-medium">{t('form.sourceId')}</span>
-            <input
+          <TextField label={t('form.sourceId')}
               value={sourceId}
-              onChange={(e) => setSourceId(e.target.value)}
-              className="w-full rounded-md border border-border bg-bg px-3 py-2"
-            />
-          </label>
-          <label className="block space-y-1 text-sm">
-            <span className="font-medium">{t('form.locus')}</span>
-            <input
+              onChange={(e) => setSourceId(e.target.value)} />
+          <TextField label={t('form.locus')}
               value={locus}
-              onChange={(e) => setLocus(e.target.value)}
-              className="w-full rounded-md border border-border bg-bg px-3 py-2"
-            />
-          </label>
-          <label className="block space-y-1 text-sm">
-            <span className="font-medium">{t('form.excerpt')}</span>
-            <textarea
+              onChange={(e) => setLocus(e.target.value)} />
+          <TextAreaField label={t('form.excerpt')}
               value={excerpt}
               onChange={(e) => setExcerpt(e.target.value)}
-              rows={2}
-              className="w-full rounded-md border border-border bg-bg px-3 py-2"
-            />
-          </label>
-          <label className="block space-y-1 text-sm">
-            <span className="font-medium">{t('form.excerptLatin')}</span>
-            <textarea
+              rows={2} />
+          <TextAreaField label={t('form.excerptLatin')}
               value={excerptLatin}
               onChange={(e) => setExcerptLatin(e.target.value)}
-              rows={2}
-              className="w-full rounded-md border border-border bg-bg px-3 py-2"
-            />
-          </label>
+              rows={2} />
         </fieldset>
 
         {formErrorKind === 'auth' && formError && (
@@ -405,13 +348,7 @@ export function SuggestPage() {
           <GenericErrorBanner message={formError} />
         )}
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-on-accent disabled:opacity-60"
-        >
-          {submitting ? t('form.submitting') : t('form.submit')}
-        </button>
+        <Button type="submit" busy={submitting} className="self-start">{submitting ? t('form.submitting') : t('form.submit')}</Button>
       </form>
     </section>
   );

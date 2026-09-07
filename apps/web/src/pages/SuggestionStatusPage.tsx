@@ -3,11 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { ApiError, getSuggestion } from '../lib/api';
 import { useAuth } from '../lib/auth';
+import { PageHeader, SuggestionStatusChip } from '../components';
 import {
   AuthErrorBanner,
   GenericErrorBanner,
   classifyApiError,
-  suggestionStatusChipClass,
 } from '../lib/suggestionUi';
 
 export function SuggestionStatusPage() {
@@ -34,7 +34,7 @@ export function SuggestionStatusPage() {
   if (!user) {
     return (
       <section className="space-y-4">
-        <h1 className="text-2xl font-semibold">{t('status.title')}</h1>
+        <PageHeader title={t('status.title')} />
         <AuthErrorBanner message={t('status.authRequired')} />
         <Link
           to="/$locale/suggest"
@@ -50,7 +50,7 @@ export function SuggestionStatusPage() {
   if (!id) {
     return (
       <section className="space-y-4">
-        <h1 className="text-2xl font-semibold">{t('status.title')}</h1>
+        <PageHeader title={t('status.title')} />
         <p className="text-muted">{t('status.missingId')}</p>
       </section>
     );
@@ -59,7 +59,7 @@ export function SuggestionStatusPage() {
   if (query.isLoading) {
     return (
       <section className="space-y-4">
-        <h1 className="text-2xl font-semibold">{t('status.title')}</h1>
+        <PageHeader title={t('status.title')} />
         <p className="text-sm text-muted">{t('status.loading')}</p>
       </section>
     );
@@ -72,7 +72,7 @@ export function SuggestionStatusPage() {
       if (classified.kind === 'auth') {
         return (
           <section className="space-y-4">
-            <h1 className="text-2xl font-semibold">{t('status.title')}</h1>
+            <PageHeader title={t('status.title')} />
             <AuthErrorBanner
               message={
                 err.status === 401
@@ -86,21 +86,21 @@ export function SuggestionStatusPage() {
       if (err.status === 404) {
         return (
           <section className="space-y-4">
-            <h1 className="text-2xl font-semibold">{t('status.title')}</h1>
+            <PageHeader title={t('status.title')} />
             <GenericErrorBanner message={t('status.notFound')} />
           </section>
         );
       }
       return (
         <section className="space-y-4">
-          <h1 className="text-2xl font-semibold">{t('status.title')}</h1>
+          <PageHeader title={t('status.title')} />
           <GenericErrorBanner message={classified.message || t('status.error')} />
         </section>
       );
     }
     return (
       <section className="space-y-4">
-        <h1 className="text-2xl font-semibold">{t('status.title')}</h1>
+        <PageHeader title={t('status.title')} />
         <GenericErrorBanner message={t('status.error')} />
       </section>
     );
@@ -110,7 +110,7 @@ export function SuggestionStatusPage() {
 
   return (
     <section className="space-y-4">
-      <h1 className="text-2xl font-semibold">{t('status.title')}</h1>
+      <PageHeader title={t('status.title')} />
       <dl className="max-w-lg space-y-3 rounded-lg border border-border bg-surface p-4 shadow-elev-1 md:p-6">
         <div>
           <dt className="text-xs uppercase tracking-wide text-muted">
@@ -123,9 +123,7 @@ export function SuggestionStatusPage() {
             {t('status.statusLabel')}
           </dt>
           <dd className="mt-1">
-            <span className={suggestionStatusChipClass(suggestion.status)}>
-              {suggestion.status}
-            </span>
+            <SuggestionStatusChip status={suggestion.status} />
           </dd>
         </div>
         <div>

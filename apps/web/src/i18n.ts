@@ -118,10 +118,10 @@ const de = {
       relatedSaintId: 'relatedSaintId (optional)',
       relatedSaintHint: 'Erzeugt Edge saint_miracle.',
       citationOptional: 'Citation (optional)',
-      sourceId: 'sourceId',
+      sourceId: 'Quelle (Kennung)',
       locus: 'Locus',
-      excerpt: 'Excerpt',
-      excerptLatin: 'Excerpt (Latein)',
+      excerpt: 'Auszug',
+      excerptLatin: 'Auszug (Latein)',
       authHint: 'POST /v1/suggestions folgt mit Bearer + Rollen.',
       signedInAs: 'Angemeldet als {{email}} ({{role}})',
       submit: 'Einreichen',
@@ -130,7 +130,7 @@ const de = {
       validation: {
         labelRequired: 'Name/Titel ist erforderlich.',
         languageRequired: 'Source erfordert fields.language (ISO).',
-        citationIncomplete: 'Citation braucht sourceId und locus.',
+        citationIncomplete: 'Eine Belegstelle braucht Quelle und Locus.',
       },
     },
     status: {
@@ -345,7 +345,7 @@ const en = {
       relatedSaintId: 'relatedSaintId (optional)',
       relatedSaintHint: 'Creates Edge saint_miracle.',
       citationOptional: 'Citation (optional)',
-      sourceId: 'sourceId',
+      sourceId: 'Source (id)',
       locus: 'Locus',
       excerpt: 'Excerpt',
       excerptLatin: 'Excerpt (Latin)',
@@ -357,7 +357,7 @@ const en = {
       validation: {
         labelRequired: 'Name/title is required.',
         languageRequired: 'Source requires fields.language (ISO).',
-        citationIncomplete: 'Citation needs both sourceId and locus.',
+        citationIncomplete: 'A reference needs both a source and a locus.',
       },
     },
     status: {
