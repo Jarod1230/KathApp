@@ -29,4 +29,17 @@ describe('translations', () => {
       expect(value.length).toBeGreaterThan(10);
     }
   });
+
+  it('names the detail sections for a reader, not after the data model', () => {
+    const de = i18n.getFixedT('de', 'entity');
+    const en = i18n.getFixedT('en', 'entity');
+
+    expect(de('slots.body')).toBe('Beschreibung');
+    expect(de('slots.citations')).toBe('Belegstellen');
+    expect(de('slots.relations')).toBe('Verknüpft');
+
+    expect(en('slots.body')).toBe('Description');
+    expect(en('slots.citations')).toBe('References');
+    expect(en('slots.relations')).toBe('Related');
+  });
 });
