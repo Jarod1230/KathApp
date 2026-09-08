@@ -1,0 +1,10 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Sicherheitslücke melden
+    url: https://github.com/Jarod1230/KathApp/security/advisories/new
+    about: Bitte nicht öffentlich als Issue — siehe SECURITY.md.
+  - name: Inhalt vorschlagen
+    url: https://github.com/Jarod1230/KathApp#readme
+    about: >
+      Heilige, Wunder und Quellen kommen nicht über Issues herein, sondern
+      ausschließlich über den Vorschlagsweg in der Anwendung.

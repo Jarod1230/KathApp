@@ -1,0 +1,39 @@
+name: Dokumentation verbessern
+description: Etwas fehlt, stimmt nicht mehr oder war nicht auffindbar
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Auch geeignet für: „Das hat mich eine Stunde gekostet." Solche Einträge
+        gehören nach
+        [`docs/lessons-learned.md`](../blob/main/docs/lessons-learned.md), und
+        ein Issue ist ein guter Weg, sie nicht zu vergessen.
+
+  - type: input
+    id: datei
+    attributes:
+      label: Welche Datei
+      placeholder: docs/development.md
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Was stimmt nicht
+      description: >
+        Fehlt etwas, ist etwas veraltet, oder hast du es nur nicht gefunden?
+        Der letzte Fall ist genauso wertvoll wie die ersten beiden.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: art
+    attributes:
+      label: Art
+      options:
+        - label: Anleitung funktioniert nicht, wenn man sie befolgt
+        - label: Beschreibt einen Stand, den es nicht mehr gibt
+        - label: War vorhanden, aber nicht auffindbar
+        - label: Kandidat für lessons-learned.md

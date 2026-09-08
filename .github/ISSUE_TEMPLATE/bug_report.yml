@@ -1,0 +1,70 @@
+name: Fehler melden
+description: Etwas funktioniert nicht wie erwartet
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke fürs Melden. Bitte **keine Sicherheitslücken** hier eintragen —
+        dafür gibt es [SECURITY.md](../blob/main/SECURITY.md).
+
+        Wenn ein Eintrag **fehlt**, obwohl er da sein müsste: das ist oft kein
+        Anzeigefehler, sondern ein Filter. Bitte unten angeben, ob der Eintrag
+        veröffentlicht ist.
+
+  - type: textarea
+    id: beschreibung
+    attributes:
+      label: Was passiert
+      description: Was beobachtest du, und was hättest du stattdessen erwartet?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduktion
+    attributes:
+      label: Wie nachvollziehbar
+      description: Schritt für Schritt.
+      placeholder: |
+        1. ...
+        2. ...
+        3. Fehler tritt auf
+    validations:
+      required: true
+
+  - type: dropdown
+    id: bereich
+    attributes:
+      label: Wo
+      options:
+        - Öffentliche Ansicht (Suche, Detailseite)
+        - Vorschlagsweg
+        - Admin und Review
+        - API
+        - Weiß nicht
+    validations:
+      required: true
+
+  - type: input
+    id: locale
+    attributes:
+      label: UI-Locale und Content-Locale
+      description: >
+        Beides angeben, sie sind getrennt. Zum Beispiel „UI de, Content la".
+      placeholder: UI de, Content de
+
+  - type: textarea
+    id: antwort
+    attributes:
+      label: Antwort der API
+      description: >
+        Falls verfügbar. Bitte vorher auf Tokens und personenbezogene Daten
+        durchsehen.
+      render: json
+
+  - type: input
+    id: version
+    attributes:
+      label: Version oder Commit
+    validations:
+      required: true
