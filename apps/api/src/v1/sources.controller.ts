@@ -2,6 +2,7 @@ import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import type { EntityDetailResponse } from '@kathapp/shared';
 import { EntitiesService } from './entities.service';
+import { RESPONSE_SCHEMAS } from '../openapi/schemas';
 
 @ApiTags('v1-sources')
 @Controller('v1/sources')
@@ -10,7 +11,9 @@ export class SourcesController {
 
   @Get(':id')
   @ApiQuery({ name: 'locale', required: false, description: 'Content locale' })
-  @ApiOkResponse({ description: 'Published source detail' })
+  @ApiOkResponse({ description: 'Published source detail',
+    schema: RESPONSE_SCHEMAS.EntityDetailResponse,
+  })
   @ApiNotFoundResponse({ description: 'Not found, draft, or soft-deleted' })
   getOne(
     @Param('id') id: string,

@@ -63,3 +63,8 @@ jobs:
 
       - name: Build api + web
         run: npm run build -w @kathapp/api && npm run build -w @kathapp/web
+
+      # Die Spezifikation liegt als Datei im Repo, damit eine Contract-Aenderung
+      # im PR sichtbar wird. Laeuft nach dem Build, weil sie aus dist/ erzeugt wird.
+      - name: OpenAPI in sync
+        run: npm run check:openapi

@@ -2,6 +2,7 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { SEARCH_DEFAULT_LIMIT, SEARCH_MAX_LIMIT, SearchResponse } from '@kathapp/shared';
 import { SearchService } from './search.service';
+import { RESPONSE_SCHEMAS } from '../openapi/schemas';
 
 @ApiTags('v1-search')
 @Controller('v1/search')
@@ -29,6 +30,7 @@ export class SearchController {
   @ApiOkResponse({
     description:
       'Published entity search. `total` counts every match, independent of the page.',
+    schema: RESPONSE_SCHEMAS.SearchResponse,
   })
   search(
     @Query('q') q?: string,

@@ -10,6 +10,7 @@ import type { AuthSession, AuthUser, DevLoginRequest } from '@kathapp/shared';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './current-user.decorator';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { RESPONSE_SCHEMAS } from '../openapi/schemas';
 
 @ApiTags('v1-auth')
 @Controller('v1/auth')
@@ -20,7 +21,10 @@ export class AuthController {
   // Mints a token for any email, so it gets a much tighter limit than the
   // blanket one in AppModule.
   @Throttle({ default: { ttl: 60_000, limit: 5 } })
-  @ApiOkResponse({ description: 'Dev JWT session (when AUTH_DEV_LOGIN enabled)' })
+  @ApiOkResponse({
+    description: 'Dev JWT session (when AUTH_DEV_LOGIN enabled)',
+    schema: RESPONSE_SCHEMAS.AuthSession,
+  })
   async devLogin(@Body() body: DevLoginRequest): Promise<AuthSession> {
     return this.auth.devLogin(body ?? { email: '' });
   }
@@ -28,7 +32,10 @@ export class AuthController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOkResponse({ description: 'Current authenticated user' })
+  @ApiOkResponse({
+    description: 'Current authenticated user',
+    schema: RESPONSE_SCHEMAS.AuthUser,
+  })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid Bearer token' })
   async me(@CurrentUser() user: AuthUser): Promise<AuthUser> {
     return this.auth.me(user);

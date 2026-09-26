@@ -24,6 +24,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { SuggestionsService } from './suggestions.service';
+import { RESPONSE_SCHEMAS } from '../openapi/schemas';
 
 @ApiTags('v1-suggestions')
 @ApiBearerAuth()
@@ -34,7 +35,10 @@ export class SuggestionsController {
 
   @Post()
   @Roles('contributor')
-  @ApiOkResponse({ description: 'Create suggestion (status=submitted)' })
+  @ApiOkResponse({
+    description: 'Create suggestion (status=submitted)',
+    schema: RESPONSE_SCHEMAS.SuggestionView,
+  })
   @ApiUnauthorizedResponse()
   create(
     @CurrentUser() user: AuthUser,
@@ -45,7 +49,10 @@ export class SuggestionsController {
 
   @Get()
   @Roles('reviewer')
-  @ApiOkResponse({ description: 'List suggestions (reviewer+)' })
+  @ApiOkResponse({
+    description: 'List suggestions (reviewer+)',
+    schema: RESPONSE_SCHEMAS.SuggestionList,
+  })
   list(
     @CurrentUser() user: AuthUser,
     @Query('status') status?: string,
@@ -54,7 +61,10 @@ export class SuggestionsController {
   }
 
   @Get(':id')
-  @ApiOkResponse({ description: 'Get suggestion (owner or reviewer+)' })
+  @ApiOkResponse({
+    description: 'Get suggestion (owner or reviewer+)',
+    schema: RESPONSE_SCHEMAS.SuggestionView,
+  })
   getOne(
     @CurrentUser() user: AuthUser,
     @Param('id') id: string,
@@ -64,7 +74,10 @@ export class SuggestionsController {
 
   @Post(':id/accept')
   @Roles('reviewer')
-  @ApiOkResponse({ description: 'Accept suggestion (publish-gates apply)' })
+  @ApiOkResponse({
+    description: 'Accept suggestion (publish-gates apply)',
+    schema: RESPONSE_SCHEMAS.SuggestionView,
+  })
   accept(
     @CurrentUser() user: AuthUser,
     @Param('id') id: string,
@@ -74,7 +87,10 @@ export class SuggestionsController {
 
   @Post(':id/reject')
   @Roles('reviewer')
-  @ApiOkResponse({ description: 'Reject suggestion' })
+  @ApiOkResponse({
+    description: 'Reject suggestion',
+    schema: RESPONSE_SCHEMAS.SuggestionView,
+  })
   reject(
     @CurrentUser() user: AuthUser,
     @Param('id') id: string,
