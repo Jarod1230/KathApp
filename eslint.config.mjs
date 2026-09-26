@@ -62,4 +62,16 @@ export default tseslint.config(
       globals: { ...globals.node },
     },
   },
+
+  {
+    // Repository-Werkzeuge. Sie laufen im Terminal, also ist Ausgabe auf die
+    // Konsole hier kein Versehen, sondern ihr Zweck.
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      globals: { ...globals.node },
+    },
+    rules: {
+      'no-console': 'off',
+    },
+  },
 );

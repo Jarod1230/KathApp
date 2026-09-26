@@ -26,7 +26,10 @@ KathApp/
 │   ├── glossary.md
 │   ├── design/              # Gestaltungsentwürfe
 │   └── decisions/           # ADRs (0001 tech stack, 0002 Contract-v1)
-├── .github/workflows/ci.yml
+├── .github/
+│   ├── workflows/ci.yml
+│   ├── pull_request_template.md
+│   └── ISSUE_TEMPLATE/
 ├── CLAUDE.md                # Hard rules for agents
 ├── AGENTS.md                # Bot role notes
 ├── CHANGELOG.md
@@ -86,6 +89,9 @@ Full copy-paste steps: [`docs/development.md`](docs/development.md).
 
 ## Docs
 
+Einstieg: **[`docs/README.md`](docs/README.md)** — dort steht auch, wohin man was
+schreibt.
+
 - [Vision & Nicht-Ziele](docs/vision.md)
 - [Architecture](docs/architecture.md)
 - [Conventions](docs/conventions.md)
@@ -95,6 +101,8 @@ Full copy-paste steps: [`docs/development.md`](docs/development.md).
 - [Gestaltungsschicht `apps/web`](docs/design/2026-09-07-frontend-design-system.md)
 - [ADR 0001 — Tech stack](docs/decisions/0001-tech-stack.md)
 - [ADR 0002 — Contract-v1](docs/decisions/0002-contract-v1.md)
+- [Lessons Learned](docs/lessons-learned.md)
+- [CONTRIBUTING.md](CONTRIBUTING.md) · [SECURITY.md](SECURITY.md)
 - [CLAUDE.md](CLAUDE.md) · [AGENTS.md](AGENTS.md)
 
 ## License

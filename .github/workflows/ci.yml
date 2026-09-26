@@ -48,6 +48,10 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      # Ein toter Doku-Link bricht nichts, er macht die Datei nur unauffindbar.
+      - name: Doc links
+        run: npm run check:docs
+
       - name: Typecheck
         run: npm run typecheck
 

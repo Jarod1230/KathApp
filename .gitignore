@@ -41,3 +41,6 @@ apps/web/dist/
 .turbo/
 .tmp/
 *.local
+
+# Claude Code: persoenliche Ergaenzungen bleiben lokal
+.claude/settings.local.json

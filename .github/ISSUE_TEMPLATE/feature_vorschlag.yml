@@ -1,0 +1,53 @@
+name: Funktion vorschlagen
+description: Eine Änderung am Produkt, nicht am Inhalt
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Für **Inhalte** — Heilige, Wunder, Quellen, Zitate — ist das hier der
+        falsche Ort. Die kommen ausschließlich über den Vorschlagsweg in der
+        Anwendung herein.
+
+        Bitte vorher die Nicht-Ziele in
+        [`docs/vision.md`](../blob/main/docs/vision.md) lesen. Einiges ist
+        bewusst außerhalb des Zuschnitts.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Welches Problem löst das
+      description: >
+        Bitte vom Problem her beschreiben, nicht von der Lösung. Wer soll was
+        tun können, was heute nicht geht?
+    validations:
+      required: true
+
+  - type: textarea
+    id: vorschlag
+    attributes:
+      label: Vorgeschlagene Lösung
+    validations:
+      required: true
+
+  - type: dropdown
+    id: contract
+    attributes:
+      label: Betrifft das Contract-v1?
+      description: >
+        Entitäten, Enums, Suggestion-Zustände, API-Form, Rollen oder
+        Extension Points. Wenn ja, braucht es vor der Umsetzung einen ADR.
+      options:
+        - "Nein"
+        - "Ja"
+        - "Weiß nicht"
+    validations:
+      required: true
+
+  - type: textarea
+    id: abgrenzung
+    attributes:
+      label: Was gehört ausdrücklich nicht dazu
+      description: >
+        Hilft beim Zuschnitt. Ein Vorschlag ohne Grenze wird im Review
+        ausgehandelt statt vorher.
