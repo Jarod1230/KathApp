@@ -86,7 +86,17 @@ Empty database: search returns `{ items: [] }`; detail routes return **404** for
 - `GET /v1/suggestions/:id` — Bearer owner or reviewer+
 - `POST /v1/suggestions/:id/accept` — Bearer reviewer+ (publish-gates)
 - `POST /v1/suggestions/:id/reject` — Bearer reviewer+
-- OpenAPI: `/docs`
+- OpenAPI: `/docs` zur Laufzeit, **und** als eingecheckte Datei unter
+  [`openapi.json`](openapi.json). Nach jeder Änderung an einem Controller neu
+  erzeugen und mitcommitten:
+
+```bash
+npm run openapi
+```
+
+Die CI prüft mit `npm run check:openapi`, dass die Datei dem Code entspricht.
+Eine Spezifikation, die nur zur Laufzeit existiert, lässt sich weder lesen noch
+im Pull Request prüfen.
 
 Filters on public reads: `status=published`, `deletedAt IS NULL`. CORS allows `http://localhost:5173`.
 
@@ -163,7 +173,7 @@ CI runs lint, typecheck, test and build, and **every one of them blocks the merg
 Run the same sequence locally before pushing:
 
 ```bash
-npm run lint && npm run typecheck && npm test && npm run build
+npm run lint && npm run check:docs && npm run typecheck && npm test && npm run build && npm run check:openapi
 ```
 
 ### Integration tests

@@ -10,7 +10,7 @@ Priorities are set by Stabschef / maintainer. This list is directional, not a co
 4. ~~Suggestions workflow (submit → review → accept/reject)~~ **done** (inklusive Publish-Gates und Endpunktprüfung für Kanten)
 5. ~~Web: locale routes, public browse stubs, admin route tree stubs~~ **done** (Priority-3 + Slice A+B wiring)
 6. ~~i18n plumbing (UI DE/EN) with content-locale separation~~ **done** (namespaces + URL locale)
-7. OpenAPI published and kept in sync — keep current with Auth/Suggestions PRs
+7. ~~OpenAPI published and kept in sync~~ **done** (`docs/openapi.json` eingecheckt, Antwortschemata deklariert, Drift-Tor in der CI, Schemata gegen echte HTTP-Antworten validiert)
 8. Minimal curation UI for reviewers/admins — **teilweise**: Review-Queue mit Annehmen/Ablehnen steht; Listen- und Bearbeitungsseiten sind bewusst Platzhalter, solange nicht entschieden ist, was sie tun sollen
 9. ~~Gestaltungsschicht für `apps/web`~~ **done** (Typografie, Dunkelschema, Komponentenschicht, Leseflächen — siehe `docs/design/`)
 

@@ -1,12 +1,15 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { API_VERSION_PREFIX } from '@kathapp/shared';
+import { RESPONSE_SCHEMAS } from '../openapi/schemas';
 
 @ApiTags('v1')
 @Controller('v1')
 export class V1Controller {
   @Get()
-  @ApiOkResponse({ description: 'Contract-v1 API root' })
+  @ApiOkResponse({ description: 'Contract-v1 API root',
+    schema: RESPONSE_SCHEMAS.ApiRoot,
+  })
   getRoot() {
     return {
       contract: 'v1',

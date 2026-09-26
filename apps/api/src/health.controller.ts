@@ -1,6 +1,7 @@
 import { Controller, Get, ServiceUnavailableException } from '@nestjs/common';
 import { ApiOkResponse, ApiServiceUnavailableResponse, ApiTags } from '@nestjs/swagger';
 import { PrismaService } from './prisma/prisma.service';
+import { RESPONSE_SCHEMAS } from './openapi/schemas';
 
 @ApiTags('health')
 @Controller('health')
@@ -13,7 +14,9 @@ export class HealthController {
    * an API that is perfectly healthy and would recover on its own.
    */
   @Get()
-  @ApiOkResponse({ description: 'Liveness probe. Does not check dependencies.' })
+  @ApiOkResponse({ description: 'Liveness probe. Does not check dependencies.',
+    schema: RESPONSE_SCHEMAS.Health,
+  })
   async getHealth(): Promise<{
     status: 'ok';
     service: string;
@@ -32,7 +35,9 @@ export class HealthController {
    * saying "ok" there would be a lie a load balancer acts on.
    */
   @Get('ready')
-  @ApiOkResponse({ description: 'Ready: dependencies reachable' })
+  @ApiOkResponse({ description: 'Ready: dependencies reachable',
+    schema: RESPONSE_SCHEMAS.Readiness,
+  })
   @ApiServiceUnavailableResponse({ description: 'A dependency is unreachable' })
   async getReadiness(): Promise<{
     status: 'ready';

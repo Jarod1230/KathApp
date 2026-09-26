@@ -18,7 +18,9 @@
     "prisma:generate": "npm run prisma:generate -w @kathapp/api",
     "prisma:migrate:deploy": "npm run prisma:migrate:deploy -w @kathapp/api",
     "lint:fix": "eslint . --fix",
-    "check:docs": "node scripts/check-doc-links.mjs"
+    "check:docs": "node scripts/check-doc-links.mjs",
+    "openapi": "npm run openapi -w @kathapp/api",
+    "check:openapi": "npm run openapi:check -w @kathapp/api"
   },
   "engines": {
     "node": ">=20"

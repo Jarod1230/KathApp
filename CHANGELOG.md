@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **OpenAPI ist jetzt eine eingecheckte Datei** (`docs/openapi.json`) statt nur eines Laufzeitendpunkts, mit `npm run openapi` zum Erzeugen und `npm run check:openapi` als CI-Tor gegen Drift
+- Antwortschemata für 14 der 20 Antworten; die übrigen sechs sind Fehlerantworten. Sie stehen einmal in `apps/api/src/openapi/schemas.ts` und werden von einem Integrationstest gegen echte HTTP-Antworten validiert, statt die Contract-Typen ein zweites Mal als Klassen hinzuschreiben
+
 - **Auth + Suggestions vertical slice (ADR 0003):** Dev JWT login (`POST /v1/auth/dev-login`, `GET /v1/auth/me`); Nest `AuthModule` (JwtModule, Passport JWT strategy, guards, roles hierarchy admin≥reviewer≥contributor); `SuggestionsModule` + `PublishGateService` gates (`translation_required`, `citation_required`, `saint_miracle_edge_required`); shared DTOs (`AuthUser`, `AuthSession`, `SuggestionPayloadV1`, …); OpenAPI Bearer + `/v1` endpoint map; `.env.example` `AUTH_DEV_LOGIN`
 - ESLint 9 flat config (`eslint.config.mjs`) covering all workspaces, plus root `lint` / `lint:fix` scripts
 - Vitest in `apps/api` and `apps/web` with unit tests for the content-locale fallback chain (API `pickLocaleValue`, `normalizeContentLocale`; web `resolveContentLocale`, `contentLocaleFromSearch`)

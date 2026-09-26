@@ -32,7 +32,7 @@ These rules are binding for every agent and contributor working in this reposito
 
 ## CI Before Merge
 
-- Every PR must pass all five gates before merge: `npm run lint && npm run check:docs && npm run typecheck && npm test && npm run build`.
+- Every PR must pass all six gates before merge: `npm run lint && npm run check:docs && npm run typecheck && npm test && npm run build && npm run check:openapi`.
 - **Read the exit code, not the output.** A test run can print `24 passed` and still exit 1. Use `npm test >/dev/null 2>&1; echo $?`. Filtering output with `grep` can hide a failure entirely.
 - **A new assertion is not trusted until it has failed.** Once it passes, break the implementation and confirm the test goes red. A test that stays green against a broken implementation is not a test.
 - A placeholder script that exits 0 is worse than a missing one: it produces a signal people believe. If a step does not exist yet, it must not pretend to run.
@@ -55,6 +55,7 @@ These rules are binding for every agent and contributor working in this reposito
 ## Extensibility Discipline
 
 - Keep versioned API under `/v1/`.
+- **The OpenAPI document is a committed file**, `docs/openapi.json`. Regenerate it with `npm run openapi` in the same PR that changes a controller; CI fails when it drifts. Response schemas live once in `apps/api/src/openapi/schemas.ts` and are validated against real HTTP responses — never restate a shared DTO as a class here.
 - Prefer extensible enums (`entityType`, `Edge.type`) and `Suggestion.schemaVersion` over ad-hoc one-off fields.
 - Soft-delete + `updatedAt` are required on persisted domain entities.
 
